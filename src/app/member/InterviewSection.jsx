@@ -48,11 +48,20 @@ function InterviewSection() {
                 <h1 className="font-bold">{test.room_name}</h1>
                 <p className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
-                  {test.scheduled_on}
+                  <span>
+                    {new Date(test.scheduled_datetime).toLocaleString("en-PK", {
+                      timeZone: "Asia/Karachi",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>
                 </p>
                 <p className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  {test.scheduled_datetime}
+                  {test.scheduled_time}
                 </p>
                 <p className="flex items-center gap-2">
                   <User className="w-4 h-4" />
