@@ -1,6 +1,6 @@
 import React from "react";
 import { useUser } from "@clerk/clerk-react";
-import { useMemberUtils } from "@/custome-hooks/useMemberUtils";
+import { useMemberUtils } from "@/hooks/useMemberUtils";
 function Users() {
   const { capitalizeStr } = useMemberUtils();
   const { user } = useUser();

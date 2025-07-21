@@ -13,17 +13,18 @@ import {
 export function CalenderComponent({ date, onDateChange }) {
   return (
     <div className="w-full">
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        Select Test Date
-      </label>
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             className="w-full justify-start text-left font-normal"
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {date ? format(date, "PPP") : <span>Pick a date</span>}
+            <CalendarIcon className="mr-2 h-4 w-4 text-[#808080] " />
+            {date ? (
+              format(date, "PPP")
+            ) : (
+              <span className="text-[#808080]">Pick a date</span>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0 bg-white" align="start">

@@ -1,14 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
-  DialogTrigger,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "./ui/dialog";
+} from "../ui/dialog";
 import { Button } from "@/components/ui/button";
 
 export function DialogComponent({
@@ -21,9 +19,20 @@ export function DialogComponent({
   submitLabel,
   cancelLabel,
 }) {
-  const handleSubmit = (e) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (onSubmit) onSubmit();
+    setLoading(true);
+    try {
+      if (onSubmit) {
+        await onSubmit();
+      }
+    } catch (err) {
+      console.error("Error during submit:", err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,7 +40,7 @@ export function DialogComponent({
       <DialogContent className="bg-white text-black sm:max-w-md rounded-xl">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>{name}</DialogTitle>
+            <DialogTitle>{name || "Assign Test"}</DialogTitle>
             <DialogDescription className="text-sm text-gray-500">
               {description}
             </DialogDescription>
@@ -40,17 +49,19 @@ export function DialogComponent({
           <div className="grid gap-4 py-4">{children}</div>
 
           <DialogFooter>
-            <DialogClose asChild>
-              <Button
-                className={"cursor-pointer"}
-                variant="outline"
-                type="button"
-              >
-                {cancelLabel}
-              </Button>
-            </DialogClose>
-            <Button className={"cursor-pointer"} type="submit">
-              {submitLabel}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onClose(false)}
+            >
+              {cancelLabel}
+            </Button>
+            <Button
+              className={"cursor-pointer bg-gray-200"}
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Submitting..." : submitLabel}
             </Button>
           </DialogFooter>
         </form>

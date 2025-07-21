@@ -2,9 +2,10 @@ import React, { useEffect } from "react";
 import MemberProfile from "./MemberProfile";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
-import { useMemberUtils } from "@/custome-hooks/useMemberUtils";
+import { useMemberUtils } from "@/hooks/useMemberUtils";
 import { Link } from "react-router-dom";
-
+import { stepsToStart } from "@/lib/Constants";
+import { useInView } from "react-intersection-observer";
 function LandingPage() {
   const { user, isSignedIn } = useUser();
   const { capitalizeStr } = useMemberUtils();
@@ -14,7 +15,10 @@ function LandingPage() {
   );
   const profileImage =
     user.publicMetadata?.profileImage || user.imageUrl || "/default.jpg";
-
+  const [howItWorksRef, howItWorksInView] = useInView({
+    triggerOnce: true,
+    threshold: 0.2,
+  });
   return (
     <div className="p-6 mt-4">
       <motion.div
@@ -74,7 +78,57 @@ function LandingPage() {
           />
         </motion.div>
       </motion.div>
-      <div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.6 }}
+        className="bg-gradient-to-r from-blue-50 via-white to-blue-50 border border-blue-200 rounded-2xl p-6 shadow-md mt-4"
+      >
+        <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-blue-900 mb-2">
+          Ready to Crush Your Next Tech Interview?
+        </h2>
+        <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
+          Dive into real-world coding scenarios that mimic actual technical
+          interviews. Whether you're prepping for your first job or leveling up
+          for tech companies, our platform gives you the edge.
+          <br />
+          <span className="font-medium text-blue-800">
+            Practice smart. Build confidence. Stand out from the crowd.
+          </span>
+        </p>
+      </motion.div>
+      <motion.div
+        ref={howItWorksRef}
+        initial={{ opacity: 0, y: 50 }}
+        animate={howItWorksInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.6 }}
+        className="mt-12 bg-white rounded-2xl shadow-md p-8"
+      >
+        <h2 className="text-2xl font-bold text-gray-800 text-center mb-8">
+          How It Works
+        </h2>
+        <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-6">
+          {stepsToStart.map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={howItWorksInView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ duration: 0.3, delay: i * 0.1 }}
+              className="bg-blue-50 p-4 rounded-lg text-center shadow-sm hover:shadow-md transition"
+            >
+              <div className="text-4xl font-bold text-blue-600 mb-2">
+                {item.step}
+              </div>
+              <h3 className="text-lg font-semibold text-gray-700">
+                {item.title}
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">{item.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+
+      <div className="mt-3">
         <MemberProfile />
       </div>
     </div>

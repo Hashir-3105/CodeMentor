@@ -25,6 +25,8 @@ export const questions = [
     difficulty: "Medium",
   },
 ];
+export const questionDifficulty = ["Easy", "Medium", "Hard"];
+
 export const candidateRequests = [
   {
     id: 1,
@@ -47,6 +49,24 @@ export const rooms = [
   { id: 3, name: "Room C", status: "Available", progress: 20 },
   { id: 4, name: "Room D", status: "Available", progress: 0 },
   { id: 5, name: "Room E", status: "Available", progress: 0 },
+];
+export const interviewers = [
+  {
+    id: 1,
+    name: "Interviewer1",
+  },
+  {
+    id: 2,
+    name: "Interviewer2",
+  },
+  {
+    id: 3,
+    name: "Interviewer3",
+  },
+  {
+    id: 4,
+    name: "Interviewer4",
+  },
 ];
 export const interviews = [
   {
@@ -78,5 +98,28 @@ export const interviews = [
     status: "Cancelled",
     room: "C",
     scheduledDateTime: "2025-07-18T13:30:00",
+  },
+];
+
+export const stepsToStart = [
+  {
+    step: "1",
+    title: "Sign Up",
+    desc: "Create your free account to get started.",
+  },
+  {
+    step: "2",
+    title: "Choose a Challenge",
+    desc: "Pick a coding task based on difficulty or topic.",
+  },
+  {
+    step: "3",
+    title: "Start Solving",
+    desc: "Write, test, and debug code in a real-time editor.",
+  },
+  {
+    step: "4",
+    title: "Track Progress",
+    desc: "Visualize your learning curve over time.",
   },
 ];

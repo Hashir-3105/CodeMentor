@@ -4,8 +4,8 @@ import { UserButton } from "@clerk/clerk-react";
 export default function AdminDashboard() {
   const adminAsides = [
     { name: "Management", redirect: "/admin/management" },
-    { name: "Test Catalog", redirect: "overview" },
     { name: "Rooms", redirect: "rooms" },
+    { name: "Test Catalog", redirect: "overview" },
     { name: "Users", redirect: "users" },
   ];
   return (
