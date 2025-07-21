@@ -10,7 +10,7 @@ const useAssignTestStore = create((set) => ({
     let query = supabase
       .from("test_assign_submissions")
       .select(
-        "id, interviewer_name, room_name, question_list, scheduled_at, user_id , int_position"
+        "id, interviewer_name, room_name, question_list, scheduled_on,scheduled_time, user_id , int_position ,scheduled_datetime"
       )
       .order("created_at", { ascending: false });
 

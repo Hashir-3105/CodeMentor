@@ -36,10 +36,10 @@ export function TimerPicker({ time, onTimeChange }) {
           <TimePicker
             onChange={(val) => {
               onTimeChange(val);
-              setOpen(false);
+              // setOpen(false);
             }}
             value={time}
-            disableClock={false}
+            disableClock={true}
             clockIcon={null}
             clearIcon={null}
             className="!border-none !shadow-none"

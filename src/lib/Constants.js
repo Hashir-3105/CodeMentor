@@ -77,7 +77,7 @@ export const interviews = [
     interviewer: "Umer Arshad",
     status: "Scheduled",
     room: "A",
-    scheduledDateTime: "2025-07-11T10:00:00",
+    scheduledDateTime: "2025-07-23T10:00:00",
   },
   {
     id: 2,

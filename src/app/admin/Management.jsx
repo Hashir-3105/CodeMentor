@@ -54,13 +54,38 @@ function Management() {
     }
     setErrors({});
     try {
+      if (!selectedDate || !selectedTime) {
+        alert("Please select both date and time.");
+        return;
+      }
+
+      const dateOnly =
+        selectedDate instanceof Date
+          ? selectedDate.toISOString().split("T")[0]
+          : selectedDate;
+
+      const [hours, minutes] = selectedTime.split(":").map(Number);
+
+      const localDate = new Date(selectedDate);
+      localDate.setHours(hours);
+      localDate.setMinutes(minutes);
+      localDate.setSeconds(0);
+      localDate.setMilliseconds(0);
+
+      if (isNaN(localDate.getTime())) {
+        alert("Invalid date or time format.");
+        return;
+      }
+
       const payload = {
         interviewer_name: form.interviewersInput,
         room_name: form.roomInput,
         question_list: form.questionInput,
-        scheduled_at: selectedDate,
+        scheduled_on: selectedDate,
         user_id: selectedCandidate.user_id,
         int_position: selectedCandidate.position,
+        scheduled_time: selectedTime,
+        scheduled_datetime: localDate.toISOString(),
       };
       console.log("Submitting:", payload);
       const { data, error } = await supabase

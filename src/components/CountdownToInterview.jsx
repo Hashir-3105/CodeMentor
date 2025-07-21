@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 function CountdownToInterview({ scheduledDateTime }) {
   const [timeLeft, setTimeLeft] = useState(getTimeLeft());
@@ -12,6 +13,7 @@ function CountdownToInterview({ scheduledDateTime }) {
   }
 
   useEffect(() => {
+    if (ready) return;
     const interval = setInterval(() => {
       const remaining = getTimeLeft();
       setTimeLeft(remaining);
@@ -38,9 +40,12 @@ function CountdownToInterview({ scheduledDateTime }) {
           </span>
         </p>
       ) : (
-        <button className="mt-2 cursor-pointer text-sm bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-md transition">
+        <Link
+          to={"/user/editor"}
+          className="mt-2 cursor-pointer text-sm bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-md transition"
+        >
           Start Interview
-        </button>
+        </Link>
       )}
     </div>
   );

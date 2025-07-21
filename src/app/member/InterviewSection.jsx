@@ -31,28 +31,28 @@ function InterviewSection() {
                 <h3 className="text-xl font-bold text-gray-800">
                   {test.int_position}
                 </h3>
-                <span
+                {/* <span
                   className={`text-sm px-3 py-1 rounded-full font-medium ${
-                    test.status === "Scheduled"
+                    interviews.status === "Scheduled"
                       ? "bg-blue-100 text-blue-800"
-                      : test.status === "Completed"
+                      : interviews.status === "Completed"
                       ? "bg-green-100 text-green-800"
                       : "bg-red-100 text-red-800"
                   }`}
                 >
-                  {test.status}
-                </span>
+                  {interviews.status}
+                </span> */}
               </div>
 
               <div className="text-gray-600 space-y-2 text-sm mb-4">
                 <h1 className="font-bold">{test.room_name}</h1>
                 <p className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
-                  {test.scheduled_at}
+                  {test.scheduled_on}
                 </p>
                 <p className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  {test.time}
+                  {test.scheduled_datetime}
                 </p>
                 <p className="flex items-center gap-2">
                   <User className="w-4 h-4" />
@@ -64,9 +64,9 @@ function InterviewSection() {
                 </p>
               </div>
 
-              {interviews.status === "Scheduled" && (
+              {test.scheduled_datetime && (
                 <CountdownToInterview
-                  scheduledDateTime={interviews.scheduledDateTime}
+                  scheduledDateTime={test.scheduled_datetime}
                 />
               )}
             </div>

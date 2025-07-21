@@ -57,18 +57,21 @@ export default function RoomsSection() {
                       <span>{test.question_list?.length || 0} questions</span>
                     </div>
 
-                    {test.scheduled_at && (
+                    {test.scheduled_datetime && (
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-purple-600" />
                         <span>
-                          {new Date(test.scheduled_at).toLocaleString("en-PK", {
-                            timeZone: "Asia/Karachi",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })}
+                          {new Date(test.scheduled_datetime).toLocaleString(
+                            "en-PK",
+                            {
+                              timeZone: "Asia/Karachi",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            }
+                          )}
                         </span>
                       </div>
                     )}
