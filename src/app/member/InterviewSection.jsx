@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Calendar, Clock, User, Briefcase } from "lucide-react";
 import CountdownToInterview from "@/components/CountdownToInterview";
-import { interviews } from "@/lib/Constants";
+// import { interviews } from "@/lib/Constants";
 import useAssignTestStore from "@/store/useAssignTestStore";
 import { useUser } from "@clerk/clerk-react";
 function InterviewSection() {

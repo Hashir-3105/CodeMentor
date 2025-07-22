@@ -9,7 +9,7 @@ export default function RoleRedirect() {
   useEffect(() => {
     const role = user?.publicMetadata?.role;
     if (role === "admin") {
-      navigate("/admin/management");
+      navigate("/admin/dashboard");
     } else if (role === "member") {
       navigate("/user");
     } else {

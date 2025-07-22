@@ -16,12 +16,13 @@ import CodeSection from "./app/member/CodeSection";
 import InterviewSection from "./app/member/InterviewSection";
 import LandingPage from "./app/member/LandingPage";
 import Rooms from "./app/admin/RoomsSection";
-import Management from "./app/admin/Management";
 import ContactUs from "./app/member/ContactUs";
 import ProblemsList from "./app/admin/ProblemsList";
 import AdminDashboard from "./app/admin/AdminDashboard";
+import ManageRequests from "./app/admin/CandidateRequests";
+import Management from "./app/admin/Management";
+import CandidateRequests from "./app/admin/CandidateRequests";
 
-// just to check clerk is working or not
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Publishable Key");
@@ -49,9 +50,14 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            path: "management",
+            path: "dashboard",
             element: <Management />,
           },
+          {
+            path: "management",
+            element: <CandidateRequests />,
+          },
+
           {
             path: "overview",
             element: <ProblemsList />,

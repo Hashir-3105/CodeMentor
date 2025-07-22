@@ -17,7 +17,7 @@ export default function RoomsSection() {
   }, {});
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 sm:px-8">
+    <div className="min-h-screen bg-gray-50 p-6 sm:px-8">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">
         Assigned Test Rooms
       </h1>

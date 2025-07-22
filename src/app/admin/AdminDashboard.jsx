@@ -3,7 +3,8 @@ import { NavLink, Outlet } from "react-router-dom";
 import { UserButton } from "@clerk/clerk-react";
 export default function AdminDashboard() {
   const adminAsides = [
-    { name: "Management", redirect: "/admin/management" },
+    { name: "Dashboard", redirect: "/admin/dashboard" },
+    { name: "Requests", redirect: "/admin/management" },
     { name: "Rooms", redirect: "rooms" },
     { name: "Test Catalog", redirect: "overview" },
     { name: "Users", redirect: "users" },

@@ -68,7 +68,7 @@ function TestCatalog() {
   }));
   const handleInputChange = createInputHandler(setForm, setErrors, errors);
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gray-50 p-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-3xl font-semibold text-gray-800">Test Catalog</h2>
         <button
