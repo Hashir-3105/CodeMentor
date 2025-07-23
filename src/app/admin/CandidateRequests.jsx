@@ -12,7 +12,6 @@ import { validationsAdmin } from "@/lib/utils";
 import useQuestionStore from "@/store/useQuestionStore";
 import useCandidatesStore from "@/store/useCandidatesStore";
 import { TimerPicker } from "@/components/TimerPicker";
-import AdminDisplay from "./Management";
 // import { createInputHandler } from "@/lib/utils";
 
 const animatedComponents = makeAnimated();

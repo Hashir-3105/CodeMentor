@@ -6,7 +6,7 @@ function MemberDashboard() {
   const navLinks = [
     { name: "Profile", redirect: "/user/profile" },
     { name: "Interviews", redirect: "/user/inter" },
-    { name: "Editor", redirect: "/user/editor" },
+    // { name: "Editor", redirect: "/user/editor" },
     { name: "Contact us", redirect: "/user/contact-us" },
   ];
   return (

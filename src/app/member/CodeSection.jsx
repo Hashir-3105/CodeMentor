@@ -1,5 +1,5 @@
-import React from "react";
 import CodeEditor from "@/components/CodeEditor";
+import React from "react";
 
 function CodeSection() {
   return <CodeEditor />;

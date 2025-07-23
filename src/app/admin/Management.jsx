@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Users, Code, CheckCircle } from "lucide-react";
+import { Clock, Users, Code, CheckCircle, icons } from "lucide-react";
 
 export default function Management() {
   const [activeTests, setActiveTests] = useState([
@@ -29,7 +29,28 @@ export default function Management() {
       progress: 0,
     },
   ]);
-  const dispayCardData = [{}, {}, {}, {}];
+  const dispayCardData = [
+    {
+      icon: <Users className="h-8 w-8 text-blue-600" />,
+      status: "Active Candidates",
+      count: 12,
+    },
+    {
+      icon: <Clock className="h-8 w-8 text-orange-600" />,
+      status: "Tests in Progress",
+      count: 8,
+    },
+    {
+      icon: <Code className="h-8 w-8 text-green-600" />,
+      status: "Completed Today",
+      count: 24,
+    },
+    {
+      icon: <CheckCircle className="h-8 w-8 text-purple-600" />,
+      status: "Pass Rate",
+      count: "78%",
+    },
+  ];
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
@@ -43,59 +64,25 @@ export default function Management() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Users className="h-8 w-8 text-blue-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">
-                    Active Candidates
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900">12</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Clock className="h-8 w-8 text-orange-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">
-                    Tests in Progress
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900">8</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Code className="h-8 w-8 text-green-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">
-                    Completed Today
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900">24</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <CheckCircle className="h-8 w-8 text-purple-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Pass Rate</p>
-                  <p className="text-2xl font-bold text-gray-900">78%</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {dispayCardData.map((item) => {
+            return (
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center">
+                    <span>{item.icon}</span>
+                    <div className="ml-4">
+                      <p className="text-sm font-medium text-gray-600">
+                        {item.status}
+                      </p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {item.count}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         <Card>
@@ -130,7 +117,7 @@ export default function Management() {
                   <div className="flex items-center space-x-4">
                     <Badge
                       variant={
-                        test.status === "in-progress" ? "default" : "secondary"
+                        test.status === "in-progress" ? "bg-black-500" : ""
                       }
                     >
                       {test.status}
