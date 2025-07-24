@@ -74,7 +74,6 @@ function InterviewSection() {
                   <Briefcase className="w-4 h-4" />
                   {test.int_position}
                 </p>
-                <p>{test.question_list}</p>
               </div>
 
               {test.scheduled_datetime && (
