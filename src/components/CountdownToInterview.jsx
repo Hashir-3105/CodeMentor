@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-function CountdownToInterview({ scheduledDateTime }) {
+function CountdownToInterview({ scheduledDateTime, testId }) {
   const [timeLeft, setTimeLeft] = useState(getTimeLeft());
   const [ready, setReady] = useState(false);
 
@@ -42,6 +42,7 @@ function CountdownToInterview({ scheduledDateTime }) {
       ) : (
         <Link
           to={"/user/editor"}
+          onClick={() => localStorage.setItem("currentTestId", testId)}
           className="mt-2 cursor-pointer text-sm bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-md transition"
         >
           Start Interview

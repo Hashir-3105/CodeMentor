@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -8,9 +8,17 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Users, Code, CheckCircle, icons } from "lucide-react";
+import { Clock, Users, Code, ClockArrowUp, icons } from "lucide-react";
+import useCandidatesStore from "@/store/useCandidatesStore";
 
 export default function Management() {
+  const { candidates, fetchCandidates, filteredCandidates } =
+    useCandidatesStore();
+  useEffect(() => {
+    fetchCandidates();
+  }, []);
+  const totalCandidates = candidates.length;
+  const pendingCandidates = filteredCandidates.length;
   const [activeTests, setActiveTests] = useState([
     {
       id: 1,
@@ -33,22 +41,22 @@ export default function Management() {
     {
       icon: <Users className="h-8 w-8 text-blue-600" />,
       status: "Active Candidates",
-      count: 12,
+      count: totalCandidates,
     },
     {
       icon: <Clock className="h-8 w-8 text-orange-600" />,
       status: "Tests in Progress",
-      count: 8,
+      count: 0,
+    },
+    {
+      icon: <ClockArrowUp className="h-8 w-8 text-purple-600" />,
+      status: "Pending",
+      count: pendingCandidates,
     },
     {
       icon: <Code className="h-8 w-8 text-green-600" />,
       status: "Completed Today",
-      count: 24,
-    },
-    {
-      icon: <CheckCircle className="h-8 w-8 text-purple-600" />,
-      status: "Pass Rate",
-      count: "78%",
+      count: 0,
     },
   ];
   return (
@@ -64,9 +72,9 @@ export default function Management() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {dispayCardData.map((item) => {
+          {dispayCardData.map((item, idx) => {
             return (
-              <Card>
+              <Card key={idx}>
                 <CardContent className="p-6">
                   <div className="flex items-center">
                     <span>{item.icon}</span>
@@ -92,6 +100,58 @@ export default function Management() {
               Real-time view of ongoing assessments
             </CardDescription>
           </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {candidates.map((test) => (
+                <div
+                  key={test.id}
+                  className="flex items-center justify-between p-4 border rounded-lg"
+                >
+                  <div className="flex items-center space-x-4">
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-blue-600 font-semibold">
+                        {test.full_name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
+                      </span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">{test.full_name}</h3>
+                      <p className="text-sm text-gray-600">{test.position}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-4">
+                    <Badge
+                      variant={
+                        test.status === "in-progress" ? "bg-black-500" : ""
+                      }
+                    >
+                      {test.status}
+                    </Badge>
+                    <div className="text-sm text-gray-600">
+                      <Clock className="inline w-4 h-4 mr-1" />
+                      {test.timeLeft}
+                    </div>
+                    <div className="w-24 bg-gray-200 rounded-full h-2">
+                      <div
+                        className="bg-blue-600 h-2 rounded-full"
+                        style={{ width: `${test.progress}%` }}
+                      ></div>
+                    </div>
+                    <Button
+                      className={"cursor-pointer"}
+                      size="sm"
+                      variant="outline"
+                    >
+                      Monitor
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
           <CardContent>
             <div className="space-y-4">
               {activeTests.map((test) => (
@@ -132,7 +192,11 @@ export default function Management() {
                         style={{ width: `${test.progress}%` }}
                       ></div>
                     </div>
-                    <Button size="sm" variant="outline">
+                    <Button
+                      className={"cursor-pointer"}
+                      size="sm"
+                      variant="outline"
+                    >
                       Monitor
                     </Button>
                   </div>

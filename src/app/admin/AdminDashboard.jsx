@@ -5,7 +5,7 @@ export default function AdminDashboard() {
   const adminAsides = [
     { name: "Dashboard", redirect: "/admin/dashboard" },
     { name: "Requests", redirect: "/admin/management" },
-    { name: "Rooms", redirect: "rooms" },
+    // { name: "Rooms", redirect: "rooms" },
     { name: "Test Catalog", redirect: "overview" },
     { name: "Editor", redirect: "users" },
   ];

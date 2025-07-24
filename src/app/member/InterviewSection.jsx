@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Calendar, Clock, User, Briefcase } from "lucide-react";
 import CountdownToInterview from "@/components/CountdownToInterview";
 // import { interviews } from "@/lib/Constants";
@@ -6,10 +6,13 @@ import useAssignTestStore from "@/store/useAssignTestStore";
 import { useUser } from "@clerk/clerk-react";
 function InterviewSection() {
   const { assignedTest, fetchAssignedTest } = useAssignTestStore();
+  const [selectedTest, setSelectedTest] = useState(null);
   const { user } = useUser();
   useEffect(() => {
     fetchAssignedTest(user?.id);
   }, []);
+  console.log(fetchAssignedTest, "Data interview Section");
+
   return (
     <div className="p-6">
       <h2 className="text-3xl font-semibold mb-6">Scheduled Interviews</h2>
@@ -71,11 +74,13 @@ function InterviewSection() {
                   <Briefcase className="w-4 h-4" />
                   {test.int_position}
                 </p>
+                <p>{test.question_list}</p>
               </div>
 
               {test.scheduled_datetime && (
                 <CountdownToInterview
                   scheduledDateTime={test.scheduled_datetime}
+                  testId={test.id}
                 />
               )}
             </div>

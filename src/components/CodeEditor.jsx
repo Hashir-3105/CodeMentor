@@ -3,6 +3,7 @@ import Editor from "@monaco-editor/react";
 import { io } from "socket.io-client";
 import { useEffect } from "react";
 import Select from "react-select";
+import useAssignTestStore from "@/store/useAssignTestStore";
 const languages = [
   { id: 63, name: "JavaScript (Node.js)" },
   { id: 71, name: "Python (3.8)" },
@@ -19,6 +20,14 @@ function CodeEditor() {
     name: languages[0].name,
     value: languages[0],
   });
+  const { assignedTest, fetchAssignedTest } = useAssignTestStore();
+
+  useEffect(() => {
+    const testId = localStorage.getItem("currentTestId");
+    if (testId) {
+      fetchAssignedTest(null, testId);
+    }
+  }, []);
 
   const languageOptions = languages.map((lang) => ({
     label: lang.name,
@@ -74,51 +83,90 @@ function CodeEditor() {
   };
 
   return (
-    <div className="flex max-h-[calc(100vh - 80px)] bg-gray-900 text-white p-8 gap-4">
-      <div className="flex-1 bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
-        <div className="flex justify-between items-center px-4 py-2 bg-gray-700 border-b border-gray-600">
-          <span className="text-sm text-gray-300">{languageId.value.name}</span>
-          <div className="flex justify-between gap-2">
-            <Select
-              options={languageOptions}
-              value={languageId}
-              onChange={(selectedOption) => setLanguageId(selectedOption)}
-              classNamePrefix="select"
-              className="text-black w-64"
-            />
+    <>
+      <div className=" mt-6 bg-white shadow-md p-6 dark:bg-gray-900 border border-gray-800">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+          Your Assigned Questions
+        </h2>
+        {assignedTest && assignedTest.length > 0 ? (
+          <div className="grid gap-4">
+            {assignedTest.map((test, index) => (
+              <div
+                key={index}
+                className="bg-gray-800 border border-gray-700 rounded-lg p-4 text-white hover:shadow-lg transition-shadow"
+              >
+                <ul className="list-disc pl-5 space-y-1 text-sm text-gray-300">
+                  {test.question_list.map((q, qIndex) => (
+                    <li key={qIndex}>
+                      {typeof q === "string"
+                        ? q
+                        : q.question || JSON.stringify(q)}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-300">
+            You have not been assigned any questions yet.
+          </p>
+        )}
+      </div>
+      <div className="flex max-h-[calc(100vh - 80px)] bg-gray-900 text-white p-8 gap-4">
+        <div className="flex-1 bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+          <div className="flex justify-between items-center px-4 py-2 bg-gray-700 border-b border-gray-600">
+            <span className="text-sm text-gray-300">
+              {languageId.value.name}
+            </span>
+            <div className="flex justify-between gap-2">
+              <Select
+                options={languageOptions}
+                value={languageId}
+                onChange={(selectedOption) => setLanguageId(selectedOption)}
+                classNamePrefix="select"
+                className="text-black w-64"
+              />
 
-            <button
-              onClick={runCode}
-              className="bg-indigo-600 px-4 py-1 rounded hover:bg-indigo-700 text-sm"
-            >
-              {loading ? "Running..." : "Run Code"}
-            </button>
+              <button
+                onClick={runCode}
+                className="bg-indigo-600 px-4 py-1 rounded hover:bg-indigo-700 text-sm cursor-pointer"
+              >
+                {loading ? "Running..." : "Run Code"}
+              </button>
+              <button
+                // onClick={runCode}
+                className="bg-indigo-500 px-4 py-1 rounded text-sm cursor-pointer"
+              >
+                {loading ? "Submitting..." : "Submit"}
+              </button>
+            </div>
+          </div>
+          <Editor
+            height="calc(100vh - 160px)"
+            className=""
+            defaultLanguage="javascript"
+            theme="vs-dark"
+            value={code}
+            onChange={handleEditorChange}
+            options={{
+              fontSize: 14,
+              minimap: { enabled: false },
+              lineNumbers: "on",
+              scrollBeyondLastLine: false,
+            }}
+          />
+        </div>
+        <div className="w-1/3 bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+          <div className="px-4 py-2 bg-gray-700 border-b border-gray-600 text-sm text-gray-300">
+            Output
+          </div>
+          <div className="p-4 text-green-400 text-sm whitespace-pre-wrap overflow-y-auto max-h-[calc(100vh - 180px)]">
+            {output || "Output will appear here"}
           </div>
         </div>
-        <Editor
-          height="calc(100vh - 160px)"
-          className=""
-          defaultLanguage="javascript"
-          theme="vs-dark"
-          value={code}
-          onChange={handleEditorChange}
-          options={{
-            fontSize: 14,
-            minimap: { enabled: false },
-            lineNumbers: "on",
-            scrollBeyondLastLine: false,
-          }}
-        />
       </div>
-      <div className="w-1/3 bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
-        <div className="px-4 py-2 bg-gray-700 border-b border-gray-600 text-sm text-gray-300">
-          Output
-        </div>
-        <div className="p-4 text-green-400 text-sm whitespace-pre-wrap overflow-y-auto max-h-[calc(100vh - 180px)]">
-          {output || "Output will appear here"}
-        </div>
-      </div>
-    </div>
+    </>
   );
 }
 

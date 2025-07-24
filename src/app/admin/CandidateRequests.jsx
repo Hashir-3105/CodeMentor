@@ -21,7 +21,13 @@ function CandidateRequests() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState("10:00");
   const { questions, fetchQuestions } = useQuestionStore();
-  const { candidates, fetchCandidates, removeCandidate } = useCandidatesStore();
+  const {
+    candidates,
+    fetchCandidates,
+    updateStatus,
+    filterCandidatesByStatus,
+    filteredCandidates,
+  } = useCandidatesStore();
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [form, setForm] = useState({
     questionInput: [],
@@ -34,7 +40,6 @@ function CandidateRequests() {
     fetchCandidates();
     fetchQuestions();
   }, []);
-
   const resetForm = () => {
     setIsSelected(false);
     setForm({
@@ -82,7 +87,7 @@ function CandidateRequests() {
       };
       console.log("Submitting:", payload);
       const { data, error } = await supabase
-        .from("test_assign_submissions")
+        .from("test_assign_submissions2")
         .insert([payload])
         .select();
       console.log("Insert response:", { data, error });
@@ -139,12 +144,12 @@ function CandidateRequests() {
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {candidates.length === 0 ? (
+        {filteredCandidates.length === 0 ? (
           <div className="col-span-full flex justify-center items-center py-10 text-gray-500 text-lg font-medium border rounded-xl bg-white shadow">
             No Requests yet
           </div>
         ) : (
-          candidates.map((candidate) => (
+          filteredCandidates.map((candidate) => (
             <div
               key={candidate.id}
               className="bg-white rounded-2xl p-6 border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
@@ -205,7 +210,8 @@ function CandidateRequests() {
           onSubmit={async () => {
             const isProcessed = await handleSubmit();
             if (!isProcessed) return;
-            removeCandidate(selectedCandidate.user_id);
+            await updateStatus(selectedCandidate.id);
+            setIsSelected(false);
           }}
           children={
             <>

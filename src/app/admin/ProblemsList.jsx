@@ -15,6 +15,7 @@ import makeAnimated from "react-select/animated";
 import { validationsTestCatalog } from "@/lib/utils";
 import useQuestionStore from "@/store/useQuestionStore";
 import { createInputHandler } from "@/lib/utils";
+import { Trash2 } from "lucide-react";
 const animatedComponents = makeAnimated();
 
 function TestCatalog() {
@@ -29,6 +30,7 @@ function TestCatalog() {
     questions: dbQuestions,
     fetchQuestions,
     addQuestion,
+    // removeQuestion,
   } = useQuestionStore();
   const { intQ, intCategory, diffLevel } = form;
 
@@ -112,6 +114,7 @@ function TestCatalog() {
               <th className="px-4 py-3 text-left">Title</th>
               <th className="px-4 py-3 text-left">Category</th>
               <th className="px-4 py-3 text-left">Difficulty</th>
+              {/* <th className="px-4 py-3 text-left"></th> */}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -120,6 +123,11 @@ function TestCatalog() {
                 <td className="px-4 py-2">{q.int_question}</td>
                 <td className="px-4 py-2">{q.que_category}</td>
                 <td className="px-4 py-2">{q.question_difficulty}</td>
+                {/* <td className="px-4 py-2">
+                  <button onClick={async (id) => await removeQuestion(id)}>
+                    <Trash2 className="w-4 h-4 cursor-pointer hover:text-red-400 mt-2" />
+                  </button>
+                </td> */}
               </tr>
             ))}
           </tbody>
