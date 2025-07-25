@@ -11,12 +11,18 @@ export default function AdminDashboard() {
   ];
   return (
     <div className="bg-gray-100 text-gray-800 min-h-screen">
-      <header className="flex justify-between items-center px-6 py-4 bg-white border-b border-gray-200 shadow-sm">
-        <h1 className="text-xl font-bold text-blue-700">Code Mentor</h1>
-        <div className="flex items-center gap-6">
+      <header className="flex items-center justify-between px-6 py-4 bg-white shadow-sm border-b border-gray-200">
+        <div className="flex items-center gap-2">
+          <div className="text-xl font-semibold text-blue-600">CodeMentor</div>
+          <span className="text-sm text-gray-500 hidden sm:inline-block">
+            | Admin Panel
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
           <UserButton />
         </div>
       </header>
+
       <div className="flex h-[calc(100vh-64px)]">
         <aside className="w-64 bg-white h-full shadow-md p-6 space-y-4">
           <nav className="flex flex-col gap-4">
