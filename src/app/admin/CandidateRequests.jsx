@@ -92,7 +92,7 @@ function CandidateRequests() {
       };
       console.log("Submitting:", payload);
       const { data, error } = await supabase
-        .from("test_assign_submissions2")
+        .from("test_assign_submissions")
         .insert([payload])
         .select();
       console.log("Insert response:", { data, error });

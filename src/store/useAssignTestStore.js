@@ -8,7 +8,7 @@ const useAssignTestStore = create((set) => ({
   fetchAssignedTest: async (userId = null, id = null) => {
     set({ assignedTest: [], loading: true });
     let query = supabase
-      .from("test_assign_submissions2")
+      .from("test_assign_submissions")
       .select(
         "id, interviewer_name, room_name, question_list, scheduled_on,scheduled_time, user_id , int_position ,scheduled_datetime"
       )
