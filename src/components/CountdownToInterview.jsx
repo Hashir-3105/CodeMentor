@@ -11,14 +11,24 @@ function CountdownToInterview({ scheduledDateTime, testId }) {
     const difference = target - now;
     return difference > 0 ? difference : 0;
   }
-
   useEffect(() => {
-    if (ready) return;
+    const remaining = getTimeLeft();
+    setTimeLeft(remaining);
+
+    if (remaining <= 0) {
+      setReady(true);
+      return;
+    }
+
     const interval = setInterval(() => {
-      const remaining = getTimeLeft();
-      setTimeLeft(remaining);
-      if (remaining === 0) setReady(true);
+      const r = getTimeLeft();
+      setTimeLeft(r);
+      if (r <= 0) {
+        clearInterval(interval);
+        setReady(true);
+      }
     }, 1000);
+
     return () => clearInterval(interval);
   }, [scheduledDateTime]);
 

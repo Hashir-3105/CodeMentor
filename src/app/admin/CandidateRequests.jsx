@@ -12,6 +12,8 @@ import { validationsAdmin } from "@/lib/utils";
 import useQuestionStore from "@/store/useQuestionStore";
 import useCandidatesStore from "@/store/useCandidatesStore";
 import { TimerPicker } from "@/components/TimerPicker";
+import { FadeLoader } from "react-spinners";
+import Skeleton from "./Skeleton";
 // import { createInputHandler } from "@/lib/utils";
 
 const animatedComponents = makeAnimated();
@@ -22,11 +24,13 @@ function CandidateRequests() {
   const [selectedTime, setSelectedTime] = useState("10:00");
   const { questions, fetchQuestions } = useQuestionStore();
   const {
-    candidates,
+    // candidates,
     fetchCandidates,
     updateStatus,
-    filterCandidatesByStatus,
+    // filterCandidatesByStatus,
     filteredCandidates,
+    hasFetch,
+    loading,
   } = useCandidatesStore();
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [form, setForm] = useState({
@@ -40,6 +44,7 @@ function CandidateRequests() {
     fetchCandidates();
     fetchQuestions();
   }, []);
+
   const resetForm = () => {
     setIsSelected(false);
     setForm({
@@ -143,60 +148,66 @@ function CandidateRequests() {
         Candidate Requests
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCandidates.length === 0 ? (
+      <div className="">
+        {loading ? (
+          <div>
+            <Skeleton />
+          </div>
+        ) : hasFetch && filteredCandidates.length === 0 ? (
           <div className="col-span-full flex justify-center items-center py-10 text-gray-500 text-lg font-medium border rounded-xl bg-white shadow">
             No Requests yet
           </div>
         ) : (
-          filteredCandidates.map((candidate) => (
-            <div
-              key={candidate.id}
-              className="bg-white rounded-2xl p-6 border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
-            >
-              <div className="space-y-3 text-gray-700">
-                <p className="flex items-center gap-2 text-base font-semibold">
-                  <User2 className="w-4 h-4 text-blue-600" />
-                  {candidate.full_name}
-                </p>
-                <p className="flex items-center gap-2 text-sm text-gray-500">
-                  <Mail className="w-4 h-4 text-gray-400" />
-                  {candidate.email}
-                </p>
-                <p className="flex items-center gap-2 text-sm text-gray-500">
-                  <ClipboardList className="w-4 h-4 text-gray-400" />
-                  Applied for:
-                  <span className="text-gray-800 font-medium ml-1">
-                    {candidate.position}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredCandidates.map((candidate) => (
+              <div
+                key={candidate.id}
+                className="bg-white rounded-2xl p-6 border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="space-y-3 text-gray-700">
+                  <p className="flex items-center gap-2 text-base font-semibold">
+                    <User2 className="w-4 h-4 text-blue-600" />
+                    {candidate.full_name}
+                  </p>
+                  <p className="flex items-center gap-2 text-sm text-gray-500">
+                    <Mail className="w-4 h-4 text-gray-400" />
+                    {candidate.email}
+                  </p>
+                  <p className="flex items-center gap-2 text-sm text-gray-500">
+                    <ClipboardList className="w-4 h-4 text-gray-400" />
+                    Applied for:
+                    <span className="text-gray-800 font-medium ml-1">
+                      {candidate.position}
+                    </span>
+                  </p>
+                </div>
+
+                <div className="mt-6 flex justify-between items-center">
+                  <span
+                    className={`text-xs px-3 py-1 rounded-full font-medium ${
+                      candidate.status === "accepted"
+                        ? "bg-green-100 text-green-700"
+                        : candidate.status === "rejected"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-yellow-100 text-yellow-700"
+                    }`}
+                  >
+                    {candidate.status || "Pending"}
                   </span>
-                </p>
-              </div>
 
-              <div className="mt-6 flex justify-between items-center">
-                <span
-                  className={`text-xs px-3 py-1 rounded-full font-medium ${
-                    candidate.status === "accepted"
-                      ? "bg-green-100 text-green-700"
-                      : candidate.status === "rejected"
-                      ? "bg-red-100 text-red-700"
-                      : "bg-yellow-100 text-yellow-700"
-                  }`}
-                >
-                  {candidate.status || "Pending"}
-                </span>
-
-                <Button
-                  onClick={() => {
-                    setSelectedCandidate(candidate);
-                    setIsSelected(true);
-                  }}
-                  className="text-sm bg-blue-600 text-white px-4 py-1.5 hover:bg-blue-700 transition-colors rounded-md"
-                >
-                  Assign Test
-                </Button>
+                  <Button
+                    onClick={() => {
+                      setSelectedCandidate(candidate);
+                      setIsSelected(true);
+                    }}
+                    className="text-sm bg-blue-600 text-white px-4 py-1.5 hover:bg-blue-700 transition-colors rounded-md"
+                  >
+                    Assign Test
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
 

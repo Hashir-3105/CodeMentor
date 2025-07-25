@@ -1,31 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { Calendar, Clock, User, Briefcase } from "lucide-react";
 import CountdownToInterview from "@/components/CountdownToInterview";
+import { FadeLoader } from "react-spinners";
 // import { interviews } from "@/lib/Constants";
 import useAssignTestStore from "@/store/useAssignTestStore";
 import { useUser } from "@clerk/clerk-react";
+import InterviewSkeleton from "./InterviewSkeleton";
 function InterviewSection() {
-  const { assignedTest, fetchAssignedTest } = useAssignTestStore();
-  const [selectedTest, setSelectedTest] = useState(null);
+  const { assignedTest, fetchAssignedTest, loading, hasFetch } =
+    useAssignTestStore();
   const { user } = useUser();
   useEffect(() => {
     fetchAssignedTest(user?.id);
   }, []);
-  console.log(fetchAssignedTest, "Data interview Section");
 
   return (
     <div className="p-6">
       <h2 className="text-3xl font-semibold mb-6">Scheduled Interviews</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {assignedTest.length === 0 ? (
-          <div className="col-span-full">
-            <div className="p-5 bg-white rounded-xl shadow hover:shadow-md transition border flex flex-col items-center justify-center h-80 text-gray-500 text-lg font-medium">
-              <Calendar className="w-6 h-6 mb-2 text-gray-400" />
-              No interviews scheduled yet
-            </div>
+      {loading ? (
+        <div>
+          <InterviewSkeleton />
+        </div>
+      ) : hasFetch && assignedTest.length === 0 ? (
+        <div className="col-span-full">
+          <div className="p-5 bg-white rounded-xl shadow hover:shadow-md transition border flex flex-col items-center justify-center h-80 text-gray-500 text-lg font-medium">
+            <Calendar className="w-6 h-6 mb-2 text-gray-400" />
+            No interviews scheduled yet
           </div>
-        ) : (
-          assignedTest.map((test) => (
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {assignedTest.map((test) => (
             <div
               key={test.id}
               className="p-5 bg-white rounded-xl shadow hover:shadow-md transition border"
@@ -83,9 +88,9 @@ function InterviewSection() {
                 />
               )}
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

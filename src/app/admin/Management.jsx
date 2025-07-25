@@ -19,24 +19,24 @@ export default function Management() {
   }, []);
   const totalCandidates = candidates.length;
   const pendingCandidates = filteredCandidates.length;
-  const [activeTests, setActiveTests] = useState([
-    {
-      id: 1,
-      candidate: "John Doe",
-      test: "JavaScript Fundamentals",
-      status: "in-progress",
-      timeLeft: "00:20",
-      progress: 60,
-    },
-    {
-      id: 2,
-      candidate: "Jane Smith",
-      test: "React Components",
-      status: "pending",
-      timeLeft: "00:30",
-      progress: 0,
-    },
-  ]);
+  // const [activeTests, setActiveTests] = useState([
+  //   {
+  //     id: 1,
+  //     candidate: "John Doe",
+  //     test: "JavaScript Fundamentals",
+  //     status: "in-progress",
+  //     timeLeft: "00:20",
+  //     progress: 60,
+  //   },
+  //   {
+  //     id: 2,
+  //     candidate: "Jane Smith",
+  //     test: "React Components",
+  //     status: "pending",
+  //     timeLeft: "00:30",
+  //     progress: 0,
+  //   },
+  // ]);
   const dispayCardData = [
     {
       icon: <Users className="h-8 w-8 text-blue-600" />,
@@ -152,7 +152,7 @@ export default function Management() {
               ))}
             </div>
           </CardContent>
-          <CardContent>
+          {/* <CardContent>
             <div className="space-y-4">
               {activeTests.map((test) => (
                 <div
@@ -203,7 +203,7 @@ export default function Management() {
                 </div>
               ))}
             </div>
-          </CardContent>
+          </CardContent> */}
         </Card>
       </div>
     </div>

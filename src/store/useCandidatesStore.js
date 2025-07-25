@@ -5,10 +5,12 @@ const useCandidatesStore = create((set, get) => ({
   candidates: [],
   filteredCandidates: [],
   loading: false,
+  hasFetch: false,
   error: null,
 
   fetchCandidates: async () => {
     set({ loading: true, error: null });
+
     const { data, error } = await supabase
       .from("contact_submissions")
       .select("id, full_name, email, position , user_id ,status")
@@ -18,10 +20,12 @@ const useCandidatesStore = create((set, get) => ({
       console.error("Error fetching submissions:", error.message);
       set({ loading: false, error: error.message });
     } else {
+      const pending = data.filter((c) => c.status === "pending");
       set({
         candidates: data,
-        filteredCandidates: data.filter((c) => c.status === "pending"),
+        filteredCandidates: pending,
         loading: false,
+        hasFetch: true,
       });
     }
   },

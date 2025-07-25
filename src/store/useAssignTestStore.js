@@ -4,8 +4,9 @@ const useAssignTestStore = create((set) => ({
   assignedTest: [],
   loading: false,
   error: null,
+  hasFetch: false,
   fetchAssignedTest: async (userId = null, id = null) => {
-    set({ assignedTest: [] });
+    set({ assignedTest: [], loading: true });
     let query = supabase
       .from("test_assign_submissions2")
       .select(
@@ -26,7 +27,7 @@ const useAssignTestStore = create((set) => ({
       console.error("Error fetching submissions:", error.message);
       set({ error, loading: false });
     } else {
-      set({ assignedTest: data, loading: false });
+      set({ assignedTest: data, loading: false, hasFetch: true });
     }
   },
 }));
