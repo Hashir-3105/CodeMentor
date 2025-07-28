@@ -1,114 +1,50 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, User2, Mail, ClipboardList } from "lucide-react";
 import { DialogComponent } from "@/components/common/DialogComponent";
 import { interviewers, rooms } from "@/lib/Constants";
 import { CalenderComponent } from "@/components/CalenderComponent";
-import { supabase } from "@/lib/supabaseClient";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import { components } from "react-select";
-import { validationsAdmin } from "@/lib/utils";
 import useQuestionStore from "@/store/useQuestionStore";
 import useCandidatesStore from "@/store/useCandidatesStore";
 import { TimerPicker } from "@/components/TimerPicker";
-import { FadeLoader } from "react-spinners";
 import Skeleton from "./Skeleton";
-// import { createInputHandler } from "@/lib/utils";
-
-const animatedComponents = makeAnimated();
+import { useSubmitRequests } from "@/hooks/useSubmitRequests";
 
 function CandidateRequests() {
-  const [isSelected, setIsSelected] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState("10:00");
+  const {
+    isSelected,
+    setIsSelected,
+    handleSubmit,
+    errors,
+    resetForm,
+    setForm,
+    setSelectedTime,
+    selectedTime,
+    selectedDate,
+    setSelectedDate,
+    selectedCandidate,
+    setSelectedCandidate,
+  } = useSubmitRequests();
+
   const { questions, fetchQuestions } = useQuestionStore();
+  const animatedComponents = makeAnimated();
+
   const {
     // candidates,
     fetchCandidates,
     updateStatus,
-    // filterCandidatesByStatus,
     filteredCandidates,
     hasFetch,
     loading,
   } = useCandidatesStore();
-  const [selectedCandidate, setSelectedCandidate] = useState(null);
-  const [form, setForm] = useState({
-    questionInput: [],
-    roomInput: "",
-    interviewersInput: "",
-  });
-  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     fetchCandidates();
     fetchQuestions();
   }, []);
-
-  const resetForm = () => {
-    setIsSelected(false);
-    setForm({
-      questionInput: [],
-      roomInput: "",
-      interviewersInput: "",
-    });
-    setSelectedDate(null);
-    setErrors({});
-  };
-
-  const handleSubmit = async () => {
-    const validateErrors = validationsAdmin(form);
-    if (Object.keys(validateErrors).length > 0) {
-      setErrors(validateErrors);
-      return false;
-    }
-    setErrors({});
-    try {
-      if (!selectedDate || !selectedTime) {
-        alert("Please select both date and time.");
-        return;
-      }
-      const [hours, minutes] = selectedTime.split(":").map(Number);
-
-      const localDateTime = new Date(selectedDate);
-      localDateTime.setHours(hours, minutes, 0, 0);
-
-      if (isNaN(localDateTime.getTime())) {
-        alert("Invalid date or time format.");
-        return;
-      }
-
-      const payload = {
-        interviewer_name: form.interviewersInput,
-        room_name: form.roomInput,
-        question_list: form.questionInput,
-        scheduled_on: selectedDate,
-        user_id: selectedCandidate.user_id,
-        int_position: selectedCandidate.position,
-        scheduled_time: selectedTime,
-        scheduled_datetime: new Date(
-          localDateTime.getTime() - localDateTime.getTimezoneOffset() * 60000
-        ).toISOString(),
-      };
-      console.log("Submitting:", payload);
-      const { data, error } = await supabase
-        .from("test_assign_submissions")
-        .insert([payload])
-        .select();
-      console.log("Insert response:", { data, error });
-
-      if (error) {
-        console.error("Insert error:", error);
-        return false;
-      }
-
-      resetForm();
-      setIsSelected(false);
-      return true;
-    } catch (err) {
-      console.error("Submission exception:", err.message);
-    }
-  };
 
   const questionOptions = questions.map((q) => ({
     label: q.int_question,
@@ -141,7 +77,6 @@ function CandidateRequests() {
     );
   };
 
-  // const handleInputChange = createInputHandler(setErrors, setForm, errors);
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <h2 className="text-3xl font-semibold mb-6 text-gray-800">

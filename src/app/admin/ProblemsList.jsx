@@ -9,57 +9,28 @@ import {
 import { DialogComponent } from "@/components/common/DialogComponent";
 import Input from "@/components/common/Input";
 import { questionDifficulty } from "@/lib/Constants";
-import { supabase } from "@/lib/supabaseClient";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
-import { validationsTestCatalog } from "@/lib/utils";
 import useQuestionStore from "@/store/useQuestionStore";
 import { createInputHandler } from "@/lib/utils";
-import { Trash2 } from "lucide-react";
+import { useSubmitQuestions } from "@/hooks/useSubmitQuestions";
 const animatedComponents = makeAnimated();
 
 function TestCatalog() {
-  const [isSelected, setIsSelected] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [form, setForm] = useState({
-    intQ: "",
-    intCategory: "",
-    diffLevel: "",
-  });
   const {
-    questions: dbQuestions,
-    fetchQuestions,
-    addQuestion,
-    // removeQuestion,
-  } = useQuestionStore();
-  const { intQ, intCategory, diffLevel } = form;
+    handleSubmit,
+    isSelected,
+    setIsSelected,
+    errors,
+    setErrors,
+    setForm,
+    intQ,
+    intCategory,
+    diffLevel,
+  } = useSubmitQuestions();
 
-  const handleSubmit = async () => {
-    const validateErrors = validationsTestCatalog(form);
-    if (Object.keys(validateErrors).length > 0) {
-      setErrors(validateErrors);
-      return false;
-    }
-    try {
-      const { data, error } = await supabase
-        .from("add_question")
-        .insert([
-          {
-            int_question: intQ,
-            que_category: intCategory,
-            question_difficulty: diffLevel,
-          },
-        ])
-        .select();
-      if (error) throw error;
+  const { questions: dbQuestions, fetchQuestions } = useQuestionStore();
 
-      addQuestion(data[0]);
-      setForm({ intQ: "", intCategory: "", diffLevel: "" });
-      setIsSelected(false);
-    } catch (err) {
-      console.error("Submission error:", err.message);
-    }
-  };
   useEffect(() => {
     fetchQuestions();
   }, []);
@@ -68,6 +39,7 @@ function TestCatalog() {
     label: diff,
     value: diff,
   }));
+
   const handleInputChange = createInputHandler(setForm, setErrors, errors);
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -114,7 +86,6 @@ function TestCatalog() {
               <th className="px-4 py-3 text-left">Title</th>
               <th className="px-4 py-3 text-left">Category</th>
               <th className="px-4 py-3 text-left">Difficulty</th>
-              {/* <th className="px-4 py-3 text-left"></th> */}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -123,11 +94,6 @@ function TestCatalog() {
                 <td className="px-4 py-2">{q.int_question}</td>
                 <td className="px-4 py-2">{q.que_category}</td>
                 <td className="px-4 py-2">{q.question_difficulty}</td>
-                {/* <td className="px-4 py-2">
-                  <button onClick={async (id) => await removeQuestion(id)}>
-                    <Trash2 className="w-4 h-4 cursor-pointer hover:text-red-400 mt-2" />
-                  </button>
-                </td> */}
               </tr>
             ))}
           </tbody>
