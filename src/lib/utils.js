@@ -18,9 +18,9 @@ export const validationsAdmin = (form) => {
   const newErrors = {};
   if (!form.questionInput || form.questionInput.length === 0)
     newErrors.questionInput = "Please select at least one question.";
-  // if (!form.roomInput) newErrors.roomInput = "Please select a room.";
-  if (!form.interviewersInput)
-    newErrors.interviewersInput = "Pick someone to lead the session";
+  if (!form.timeInput) newErrors.timeInput = "Please select a time.";
+  // if (!form.interviewersInput)
+  //   newErrors.interviewersInput = "Pick someone to lead the session";
   return newErrors;
 };
 export const validationsTestCatalog = (form) => {

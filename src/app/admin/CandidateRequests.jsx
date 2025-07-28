@@ -2,7 +2,8 @@ import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, User2, Mail, ClipboardList } from "lucide-react";
 import { DialogComponent } from "@/components/common/DialogComponent";
-import { interviewers, rooms } from "@/lib/Constants";
+// import { interviewers, rooms } from "@/lib/Constants";
+import { totalTime } from "@/lib/Constants";
 import { CalenderComponent } from "@/components/CalenderComponent";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
@@ -51,15 +52,10 @@ function CandidateRequests() {
     value: q,
   }));
 
-  // const roomOptions = rooms.map((r) => ({
-  //   label: r.name,
-  //   value: r,
-  // }));
-
-  // const interviewerOptions = interviewers.map((int) => ({
-  //   label: int.name,
-  //   value: int,
-  // }));
+  const timeOptions = totalTime.map((time) => ({
+    label: `${time} minutes`,
+    value: time,
+  }));
 
   const CustomValueContainer = ({ children, ...props }) => {
     const selected = props.getValue();
@@ -187,24 +183,24 @@ function CandidateRequests() {
                 )}
               </div>
 
-              {/* <div className="flex flex-col gap-0.5">
+              <div className="flex flex-col gap-0.5">
                 <Select
-                  options={roomOptions}
-                  placeholder="Select Room"
+                  options={timeOptions}
+                  placeholder="Select Time"
                   components={animatedComponents}
                   onChange={(selectedOption) => {
                     setForm((prev) => ({
                       ...prev,
-                      roomInput: selectedOption.label,
+                      timeInput: selectedOption.value,
                     }));
                   }}
                 />
-                {errors.roomInput && (
+                {errors.timeInput && (
                   <p className="text-red-500 text-sm ml-1">
-                    {errors.roomInput}
+                    {errors.timeInput}
                   </p>
                 )}
-              </div> */}
+              </div>
 
               {/* <div className="flex flex-col gap-0.5">
                 <Select

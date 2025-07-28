@@ -11,6 +11,7 @@ export function useSubmitRequests() {
 
   const [form, setForm] = useState({
     questionInput: [],
+    timeInput: null,
     // roomInput: "",
     // interviewersInput: "",
   });
@@ -18,6 +19,7 @@ export function useSubmitRequests() {
     setIsSelected(false);
     setForm({
       questionInput: [],
+      timeInput: null,
       // roomInput: "",
       // interviewersInput: "",
     });
@@ -49,6 +51,7 @@ export function useSubmitRequests() {
       const payload = {
         // interviewer_name: form.interviewersInput,
         // room_name: form.roomInput,
+        duration_minutes: form.timeInput,
         question_list: form.questionInput,
         scheduled_on: selectedDate,
         user_id: selectedCandidate.user_id,

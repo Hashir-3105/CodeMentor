@@ -59,10 +59,10 @@ function TestSection() {
                   <Briefcase className="w-4 h-4 text-gray-500" />
                   <span>{test.int_position}</span>
                 </div>
-                <div className="flex items-center gap-2">
+                {/* <div className="flex items-center gap-2">
                   <User className="w-4 h-4 text-gray-500" />
                   <span>{test.interviewer_name}</span>
-                </div>
+                </div> */}
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-gray-500" />
                   <span>
