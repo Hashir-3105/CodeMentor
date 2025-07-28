@@ -16,7 +16,9 @@ function ContactUs() {
     message,
     setForm,
   } = useContactUsSubmission();
+
   const handleInputChange = createInputHandler(setForm, setErrors, errors);
+
   return (
     <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-white px-4 py-12">
       <div className="w-full max-w-xl bg-white rounded-3xl shadow-xl border border-gray-200 p-10 transition-all duration-300">

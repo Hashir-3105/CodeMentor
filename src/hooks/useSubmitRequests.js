@@ -11,15 +11,15 @@ export function useSubmitRequests() {
 
   const [form, setForm] = useState({
     questionInput: [],
-    roomInput: "",
-    interviewersInput: "",
+    // roomInput: "",
+    // interviewersInput: "",
   });
   const resetForm = () => {
     setIsSelected(false);
     setForm({
       questionInput: [],
-      roomInput: "",
-      interviewersInput: "",
+      // roomInput: "",
+      // interviewersInput: "",
     });
     setSelectedDate(null);
     setErrors({});
@@ -47,11 +47,12 @@ export function useSubmitRequests() {
       }
 
       const payload = {
-        interviewer_name: form.interviewersInput,
-        room_name: form.roomInput,
+        // interviewer_name: form.interviewersInput,
+        // room_name: form.roomInput,
         question_list: form.questionInput,
         scheduled_on: selectedDate,
         user_id: selectedCandidate.user_id,
+        candidate_name: selectedCandidate.full_name,
         int_position: selectedCandidate.position,
         scheduled_time: selectedTime,
         scheduled_datetime: new Date(

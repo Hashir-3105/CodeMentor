@@ -13,7 +13,7 @@ import Users from "./app/admin/Users";
 import Unauthorized from "./components/Unauthorized";
 import RoleRedirect from "./components/RoleRedirect";
 import CodeSection from "./app/member/CodeSection";
-import InterviewSection from "./app/member/InterviewSection";
+// import InterviewSection from "./app/member/TestSection";
 import LandingPage from "./app/member/LandingPage";
 import Rooms from "./app/admin/RoomsSection";
 import ContactUs from "./app/member/ContactUs";
@@ -22,6 +22,7 @@ import AdminDashboard from "./app/admin/AdminDashboard";
 import ManageRequests from "./app/admin/CandidateRequests";
 import Management from "./app/admin/Management";
 import CandidateRequests from "./app/admin/CandidateRequests";
+import TestSection from "./app/member/TestSection";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 if (!PUBLISHABLE_KEY) {
@@ -85,11 +86,11 @@ const router = createBrowserRouter([
             element: <LandingPage />,
           },
           {
-            path: "inter",
-            element: <InterviewSection />,
+            path: "test",
+            element: <TestSection />,
           },
           {
-            path: "editor",
+            path: "editor/:testId",
             element: <CodeSection />,
           },
           {

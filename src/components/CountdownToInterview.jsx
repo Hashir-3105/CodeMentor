@@ -51,8 +51,7 @@ function CountdownToInterview({ scheduledDateTime, testId }) {
         </p>
       ) : (
         <Link
-          to={"/user/editor"}
-          onClick={() => localStorage.setItem("currentTestId", testId)}
+          to={`/user/editor/${testId}`}
           className="mt-2 cursor-pointer text-sm bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-md transition"
         >
           Start Interview

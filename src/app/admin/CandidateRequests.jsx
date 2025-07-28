@@ -51,15 +51,15 @@ function CandidateRequests() {
     value: q,
   }));
 
-  const roomOptions = rooms.map((r) => ({
-    label: r.name,
-    value: r,
-  }));
+  // const roomOptions = rooms.map((r) => ({
+  //   label: r.name,
+  //   value: r,
+  // }));
 
-  const interviewerOptions = interviewers.map((int) => ({
-    label: int.name,
-    value: int,
-  }));
+  // const interviewerOptions = interviewers.map((int) => ({
+  //   label: int.name,
+  //   value: int,
+  // }));
 
   const CustomValueContainer = ({ children, ...props }) => {
     const selected = props.getValue();
@@ -187,7 +187,7 @@ function CandidateRequests() {
                 )}
               </div>
 
-              <div className="flex flex-col gap-0.5">
+              {/* <div className="flex flex-col gap-0.5">
                 <Select
                   options={roomOptions}
                   placeholder="Select Room"
@@ -204,9 +204,9 @@ function CandidateRequests() {
                     {errors.roomInput}
                   </p>
                 )}
-              </div>
+              </div> */}
 
-              <div className="flex flex-col gap-0.5">
+              {/* <div className="flex flex-col gap-0.5">
                 <Select
                   options={interviewerOptions}
                   placeholder="Select Interviewer"
@@ -223,7 +223,7 @@ function CandidateRequests() {
                     {errors.interviewersInput}
                   </p>
                 )}
-              </div>
+              </div> */}
 
               <CalenderComponent
                 date={selectedDate}

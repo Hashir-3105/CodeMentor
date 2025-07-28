@@ -8,12 +8,13 @@ export default function RoleRedirect() {
 
   useEffect(() => {
     const role = user?.publicMetadata?.role;
+
     if (role === "admin") {
-      navigate("/admin/dashboard");
+      navigate("/admin/dashboard", { replace: true });
     } else if (role === "member") {
-      navigate("/user");
+      navigate("/user", { replace: true });
     } else {
-      navigate("/unauthorzied");
+      navigate("/unauthorized", { replace: true });
     }
   }, [user, navigate]);
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -8,17 +8,17 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Users, Code, ClockArrowUp, icons } from "lucide-react";
-import useCandidatesStore from "@/store/useCandidatesStore";
+import { Clock } from "lucide-react";
+import { useAdminManagement } from "@/hooks/useAdminManagement";
+import useAssignTestStore from "@/store/useAssignTestStore";
 
 export default function Management() {
-  const { candidates, fetchCandidates, filteredCandidates } =
-    useCandidatesStore();
+  const { dispayCardData } = useAdminManagement();
+  const { assignedTest, fetchAssignedTest, hasFetch } = useAssignTestStore();
+
   useEffect(() => {
-    fetchCandidates();
+    fetchAssignedTest();
   }, []);
-  const totalCandidates = candidates.length;
-  const pendingCandidates = filteredCandidates.length;
   // const [activeTests, setActiveTests] = useState([
   //   {
   //     id: 1,
@@ -37,28 +37,6 @@ export default function Management() {
   //     progress: 0,
   //   },
   // ]);
-  const dispayCardData = [
-    {
-      icon: <Users className="h-8 w-8 text-blue-600" />,
-      status: "Active Candidates",
-      count: totalCandidates,
-    },
-    {
-      icon: <Clock className="h-8 w-8 text-orange-600" />,
-      status: "Tests in Progress",
-      count: 0,
-    },
-    {
-      icon: <ClockArrowUp className="h-8 w-8 text-purple-600" />,
-      status: "Pending",
-      count: pendingCandidates,
-    },
-    {
-      icon: <Code className="h-8 w-8 text-green-600" />,
-      status: "Completed Today",
-      count: 0,
-    },
-  ];
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
@@ -102,108 +80,64 @@ export default function Management() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {candidates.map((test) => (
-                <div
-                  key={test.id}
-                  className="flex items-center justify-between p-4 border rounded-lg"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 font-semibold">
-                        {test.full_name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </span>
+              {hasFetch && assignedTest.length === 0 ? (
+                <p className="text-gray-500 text-center py-6">
+                  There are currently no assessments assigned to candidates.
+                </p>
+              ) : (
+                assignedTest.map((test) => (
+                  <div
+                    key={test.id}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span className="text-blue-600 font-semibold">
+                          {test.candidate_name
+                            ?.split(" ")
+                            .map((n) => n[0])
+                            .join("")}
+                        </span>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">{test.candidate_name}</h3>
+                        <p className="text-sm text-gray-600">
+                          {test.int_position}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-semibold">{test.full_name}</h3>
-                      <p className="text-sm text-gray-600">{test.position}</p>
-                    </div>
-                  </div>
 
-                  <div className="flex items-center space-x-4">
-                    <Badge
-                      variant={
-                        test.status === "in-progress" ? "bg-black-500" : ""
-                      }
-                    >
-                      {test.status}
-                    </Badge>
-                    <div className="text-sm text-gray-600">
-                      <Clock className="inline w-4 h-4 mr-1" />
-                      {test.timeLeft}
+                    <div className="flex items-center space-x-4">
+                      <Badge
+                        variant={
+                          test.status === "in-progress" ? "bg-black-500" : ""
+                        }
+                      >
+                        {test.status}
+                      </Badge>
+                      <div className="text-sm text-gray-600">
+                        <Clock className="inline w-4 h-4 mr-1" />
+                        {test.timeLeft}
+                      </div>
+                      <div className="w-24 bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full"
+                          style={{ width: `${test.progress}%` }}
+                        ></div>
+                      </div>
+                      <Button
+                        className={"cursor-pointer"}
+                        size="sm"
+                        variant="outline"
+                      >
+                        Monitor
+                      </Button>
                     </div>
-                    <div className="w-24 bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full"
-                        style={{ width: `${test.progress}%` }}
-                      ></div>
-                    </div>
-                    <Button
-                      className={"cursor-pointer"}
-                      size="sm"
-                      variant="outline"
-                    >
-                      Monitor
-                    </Button>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </CardContent>
-          {/* <CardContent>
-            <div className="space-y-4">
-              {activeTests.map((test) => (
-                <div
-                  key={test.id}
-                  className="flex items-center justify-between p-4 border rounded-lg"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 font-semibold">
-                        {test.candidate
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </span>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">{test.candidate}</h3>
-                      <p className="text-sm text-gray-600">{test.test}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-4">
-                    <Badge
-                      variant={
-                        test.status === "in-progress" ? "bg-black-500" : ""
-                      }
-                    >
-                      {test.status}
-                    </Badge>
-                    <div className="text-sm text-gray-600">
-                      <Clock className="inline w-4 h-4 mr-1" />
-                      {test.timeLeft}
-                    </div>
-                    <div className="w-24 bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full"
-                        style={{ width: `${test.progress}%` }}
-                      ></div>
-                    </div>
-                    <Button
-                      className={"cursor-pointer"}
-                      size="sm"
-                      variant="outline"
-                    >
-                      Monitor
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent> */}
         </Card>
       </div>
     </div>

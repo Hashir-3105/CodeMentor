@@ -8,7 +8,7 @@ function MemberDashboard() {
 
   const navLinks = [
     { name: "Profile", redirect: "/user/profile" },
-    { name: "Interviews", redirect: "/user/inter" },
+    { name: "Interviews", redirect: "/user/test" },
     { name: "Contact us", redirect: "/user/contact-us" },
   ];
 
@@ -41,7 +41,7 @@ function MemberDashboard() {
                 {item.name}
               </NavLink>
             ))}
-            <UserButton afterSignOutUrl="/" />
+            <UserButton />
           </nav>
 
           <button

@@ -4,6 +4,7 @@ import { io } from "socket.io-client";
 import { useEffect } from "react";
 import Select from "react-select";
 import useAssignTestStore from "@/store/useAssignTestStore";
+import { useParams } from "react-router-dom";
 const languages = [
   { id: 63, name: "JavaScript (Node.js)" },
   { id: 71, name: "Python (3.8)" },
@@ -16,6 +17,7 @@ function CodeEditor() {
   const [code, setCode] = useState("");
   const [output, setOutput] = useState("");
   const [loading, setLoading] = useState(false);
+  const { testId } = useParams();
   const [languageId, setLanguageId] = useState({
     name: languages[0].name,
     value: languages[0],
@@ -23,7 +25,7 @@ function CodeEditor() {
   const { assignedTest, fetchAssignedTest } = useAssignTestStore();
 
   useEffect(() => {
-    const testId = localStorage.getItem("currentTestId");
+    // const testId = localStorage.getItem("currentTestId");
     if (testId) {
       fetchAssignedTest(null, testId);
     }
