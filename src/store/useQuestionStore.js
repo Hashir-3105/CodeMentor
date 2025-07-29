@@ -9,7 +9,9 @@ const useQuestionStore = create((set) => ({
     set({ loading: true, error: null });
     const { data, error } = await supabase
       .from("add_question")
-      .select("id, int_question, que_category, question_difficulty")
+      .select(
+        "id, int_question, que_category, question_difficulty,expected_output"
+      )
       .order("created_at", { ascending: false });
 
     if (error) {

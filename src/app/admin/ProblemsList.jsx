@@ -25,7 +25,8 @@ function TestCatalog() {
     setErrors,
     setForm,
     intQ,
-    intCategory,
+    expectedOutput,
+    // intCategory,
     diffLevel,
   } = useSubmitQuestions();
 
@@ -105,7 +106,7 @@ function TestCatalog() {
           isOpen={isSelected}
           onClose={() => {
             setIsSelected(false),
-              setForm({ intQ: "", intCategory: "", diffLevel: "" }),
+              setForm({ intQ: "", expectedOutput: "", diffLevel: "" }),
               setErrors({});
           }}
           onSubmit={async () => {
@@ -126,13 +127,15 @@ function TestCatalog() {
               </div>
               <div className="flex flex-col gap-0.5">
                 <Input
-                  placeholder={"Add Category..."}
-                  name={"intCategory"}
-                  value={intCategory}
-                  onChange={handleInputChange("intCategory")}
+                  placeholder={"Add answer..."}
+                  name={"expectedOutput"}
+                  value={expectedOutput}
+                  onChange={handleInputChange("expectedOutput")}
                 />
-                {errors.intCategory && (
-                  <p className="text-red-500 text-sm">{errors.intCategory}</p>
+                {errors.expectedOutput && (
+                  <p className="text-red-500 text-sm">
+                    {errors.expectedOutput}
+                  </p>
                 )}
               </div>
               <Select

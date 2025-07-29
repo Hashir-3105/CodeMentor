@@ -7,11 +7,12 @@ export function useSubmitQuestions() {
   const [errors, setErrors] = useState({});
   const [form, setForm] = useState({
     intQ: "",
+    expectedOutput: "",
     intCategory: "",
     diffLevel: "",
   });
   const { addQuestion } = useQuestionStore();
-  const { intQ, intCategory, diffLevel } = form;
+  const { intQ, intCategory, diffLevel, expectedOutput } = form;
   const handleSubmit = async () => {
     const validateErrors = validationsTestCatalog(form);
     if (Object.keys(validateErrors).length > 0) {
@@ -24,6 +25,7 @@ export function useSubmitQuestions() {
         .insert([
           {
             int_question: intQ,
+            expected_output: expectedOutput,
             que_category: intCategory,
             question_difficulty: diffLevel,
           },
@@ -48,5 +50,6 @@ export function useSubmitQuestions() {
     intQ,
     intCategory,
     diffLevel,
+    expectedOutput,
   };
 }

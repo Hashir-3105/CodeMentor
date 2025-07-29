@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import useAssignTestStore from "@/store/useAssignTestStore";
 function CountdownToInterview({ scheduledDateTime, testId }) {
   const [timeLeft, setTimeLeft] = useState(getTimeLeft());
   const [ready, setReady] = useState(false);
-
+  const { updateTestStatus } = useAssignTestStore();
   function getTimeLeft() {
     const now = new Date().getTime();
     const target = new Date(scheduledDateTime).getTime();
@@ -39,7 +39,6 @@ function CountdownToInterview({ scheduledDateTime, testId }) {
     const s = String(totalSeconds % 60).padStart(2, "0");
     return `${h}:${m}:${s}`;
   };
-
   return (
     <div className="mt-4 text-center">
       {!ready ? (
@@ -51,10 +50,11 @@ function CountdownToInterview({ scheduledDateTime, testId }) {
         </p>
       ) : (
         <Link
+          onClick={() => updateTestStatus(testId, "in-progress")}
           to={`/user/editor/${testId}`}
           className="mt-2 cursor-pointer text-sm bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-md transition"
         >
-          Start Interview
+          Start Test
         </Link>
       )}
     </div>

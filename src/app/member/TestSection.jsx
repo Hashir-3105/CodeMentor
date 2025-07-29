@@ -4,13 +4,11 @@ import CountdownToInterview from "@/components/CountdownToInterview";
 import useAssignTestStore from "@/store/useAssignTestStore";
 import { useUser } from "@clerk/clerk-react";
 import InterviewSkeleton from "./InterviewSkeleton";
-// import { useParams } from "react-router-dom";
 
 function TestSection() {
   const { assignedTest, fetchAssignedTest, loading, hasFetch } =
     useAssignTestStore();
   const { user } = useUser();
-  // const { testId } = useParams();
   useEffect(() => {
     fetchAssignedTest(user?.id);
   }, []);

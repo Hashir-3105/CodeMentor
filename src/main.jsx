@@ -71,6 +71,10 @@ const router = createBrowserRouter([
             path: "users",
             element: <Users />,
           },
+          {
+            path: "editor/:userId/:testId",
+            element: <CodeSection />,
+          },
         ],
       },
       {

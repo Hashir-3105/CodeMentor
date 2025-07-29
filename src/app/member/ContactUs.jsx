@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import Input from "@/components/common/Input";
 import { createInputHandler } from "@/lib/utils";
 import { useContactUsSubmission } from "@/hooks/useContactUsSubmission";
+import { ToastContainer } from "react-toastify";
+import { Bounce } from "react-toastify";
 
 function ContactUs() {
   const {
@@ -92,6 +94,19 @@ function ContactUs() {
             {isSubmitting ? "Submitting..." : "Submit Application"}
           </Button>
         </form>
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+          transition={Bounce}
+        />
       </div>
     </section>
   );

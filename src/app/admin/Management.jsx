@@ -8,14 +8,15 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock } from "lucide-react";
 import { useAdminManagement } from "@/hooks/useAdminManagement";
 import useAssignTestStore from "@/store/useAssignTestStore";
+import { useNavigate } from "react-router-dom";
+import CountDown from "./CountDown";
 
 export default function Management() {
   const { dispayCardData } = useAdminManagement();
   const { assignedTest, fetchAssignedTest, hasFetch } = useAssignTestStore();
-
+  const navigate = useNavigate();
   useEffect(() => {
     fetchAssignedTest();
   }, []);
@@ -88,7 +89,7 @@ export default function Management() {
                 assignedTest.map((test) => (
                   <div
                     key={test.id}
-                    className="flex items-center justify-between p-4 border rounded-lg"
+                    className="flex items-center justify-between p-3 border rounded-lg"
                   >
                     <div className="flex items-center space-x-4">
                       <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -107,17 +108,24 @@ export default function Management() {
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center justify-between space-x-4">
                       <Badge
-                        variant={
-                          test.status === "in-progress" ? "bg-black-500" : ""
-                        }
+                        className={`${
+                          test.status === "in-progress"
+                            ? "bg-black text-white"
+                            : test.status === "Completed"
+                            ? "bg-green-500 text-white"
+                            : "bg-gray-200 text-gray-800"
+                        } w-[90px] py-1`}
                       >
                         {test.status}
                       </Badge>
-                      <div className="text-sm text-gray-600">
-                        <Clock className="inline w-4 h-4 mr-1" />
-                        {test.timeLeft}
+                      <div className="text-sm text-gray-600 ">
+                        <CountDown
+                          testId={test.id}
+                          isStarted={test.status === "in-progress"}
+                          durationInMinutes={test.duration_minutes}
+                        />
                       </div>
                       <div className="w-24 bg-gray-200 rounded-full h-2">
                         <div
@@ -126,11 +134,20 @@ export default function Management() {
                         ></div>
                       </div>
                       <Button
+                        onClick={() =>
+                          navigate(`/admin/editor/${test.user_id}/${test.id}`)
+                        }
+                        // onClick={() =>
+                        //   window.open(
+                        //     `/admin/editor/${test.user_id}/${test.id}`,
+                        //     "_blank"
+                        //   )
+                        // }
                         className={"cursor-pointer"}
                         size="sm"
                         variant="outline"
                       >
-                        Monitor
+                        View
                       </Button>
                     </div>
                   </div>

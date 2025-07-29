@@ -26,7 +26,7 @@ export const validationsAdmin = (form) => {
 export const validationsTestCatalog = (form) => {
   const newErrors = {};
   if (!form.intQ) newErrors.intQ = "Input field required";
-  if (!form.intCategory) newErrors.intCategory = "Input field required";
+  if (!form.expectedOutput) newErrors.expectedOutput = "Input field required";
   return newErrors;
 };
 

@@ -2,6 +2,7 @@ import { useUser } from "@clerk/clerk-react";
 import { supabase } from "@/lib/supabaseClient";
 import { validations } from "@/lib/utils";
 import { useState } from "react";
+import { toast, Bounce } from "react-toastify";
 export function useContactUsSubmission() {
   const [form, setForm] = useState({
     fullName: "",
@@ -43,6 +44,17 @@ export function useContactUsSubmission() {
     } catch (err) {
       console.error("Submission error:", err.message);
     } finally {
+      toast.success("Request Submitted Successfully!", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
       setIsSubmitting(false);
     }
   };
