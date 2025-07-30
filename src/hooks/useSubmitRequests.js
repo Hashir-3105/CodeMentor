@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { validationsAdmin } from "@/lib/utils";
 import { supabase } from "@/lib/supabaseClient";
-
+import { toast, Bounce } from "react-toastify";
 export function useSubmitRequests() {
   const [isSelected, setIsSelected] = useState(false);
   const [errors, setErrors] = useState({});
@@ -73,7 +73,18 @@ export function useSubmitRequests() {
         console.error("Insert error:", error);
         return false;
       }
-
+      toast.success("Test assigned Successfully!", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
+      console.log("Toaster Runnnn");
       resetForm();
       setIsSelected(false);
       return true;

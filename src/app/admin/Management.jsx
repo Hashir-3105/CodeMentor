@@ -20,24 +20,6 @@ export default function Management() {
   useEffect(() => {
     fetchAssignedTest();
   }, []);
-  // const [activeTests, setActiveTests] = useState([
-  //   {
-  //     id: 1,
-  //     candidate: "John Doe",
-  //     test: "JavaScript Fundamentals",
-  //     status: "in-progress",
-  //     timeLeft: "00:20",
-  //     progress: 60,
-  //   },
-  //   {
-  //     id: 2,
-  //     candidate: "Jane Smith",
-  //     test: "React Components",
-  //     status: "pending",
-  //     timeLeft: "00:30",
-  //     progress: 0,
-  //   },
-  // ]);
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">

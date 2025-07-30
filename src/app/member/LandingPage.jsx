@@ -127,7 +127,6 @@ function LandingPage() {
           ))}
         </div>
       </motion.div>
-
       <div className="mt-3">
         <MemberProfile />
       </div>

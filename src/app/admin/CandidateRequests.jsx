@@ -14,6 +14,7 @@ import { TimerPicker } from "@/components/TimerPicker";
 import Skeleton from "./Skeleton";
 import { useSubmitRequests } from "@/hooks/useSubmitRequests";
 import UpdatesPage from "@/components/common/UpdatesPage";
+import Toaster from "@/components/common/Toaster";
 
 function CandidateRequests() {
   const {
@@ -236,6 +237,7 @@ function CandidateRequests() {
           }
         />
       )}
+      <Toaster />
     </div>
   );
 }
