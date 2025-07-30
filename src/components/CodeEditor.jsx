@@ -7,7 +7,8 @@ import useAssignTestStore from "@/store/useAssignTestStore";
 import { useParams } from "react-router-dom";
 import { Play, X } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
-import LoadingSuccess from "./LoadingSuccess";
+// import LoadingSuccess from "./LoadingSuccess";
+import CountDownTimer from "./common/CountDownTimer";
 const languages = [
   { id: 63, name: "JavaScript (Node.js)" },
   { id: 71, name: "Python (3.8)" },
@@ -82,6 +83,9 @@ function CodeEditor() {
 
     if (result.status && result.status.description === "Accepted") {
       setSuccessMessage(true);
+      setTimeout(() => {
+        setSuccessMessage(false);
+      }, 3000);
     } else {
       setSuccessMessage(false);
     }
@@ -102,6 +106,11 @@ function CodeEditor() {
         </h2>
         {assignedTest && assignedTest.length > 0 ? (
           <div className="grid gap-4">
+            <CountDownTimer
+              testId={assignedTest[0].id}
+              durationInMinutes={assignedTest[0].duration_minutes}
+            />
+
             {assignedTest.map((test, index) => (
               <div
                 key={index}
@@ -168,46 +177,22 @@ function CodeEditor() {
           <div className="px-4 py-2 bg-gray-700 border-b border-gray-600 text-sm text-gray-300">
             Output
           </div>
-          <div className="p-4 text-green-400 text-sm whitespace-pre-wrap overflow-y-auto max-h-[calc(100vh - 180px)]">
-            {output || "Output will appear here"}
+          <div className="p-4 text-sm whitespace-pre-wrap overflow-y-auto max-h-[calc(100vh - 180px)]">
+            {successMessage ? (
+              <div className="bg-green-100 text-green-700 p-3 rounded-lg text-center">
+                <h3 className="font-bold">✅ Code Accepted!</h3>
+                <p className="text-xs mt-1">
+                  Well done! You solved the problem successfully.
+                </p>
+              </div>
+            ) : (
+              <p className="text-green-400">
+                {output || "Output will appear here"}
+              </p>
+            )}
           </div>
         </div>
       </div>
-      {successMessage && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-2xl p-8 text-center w-[350px] animate-scaleUp">
-            <div className="flex justify-center mb-4">
-              <div className="bg-green-100 p-4 rounded-full">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-10 w-10 text-green-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-            </div>
-
-            <h2 className="text-2xl font-bold text-gray-900">Code Accepted!</h2>
-            <p className="text-gray-500 text-sm mt-2">
-              Well done! You solved the problem successfully.
-            </p>
-            <button
-              onClick={() => setSuccessMessage(false)}
-              className="mt-6 w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 }
