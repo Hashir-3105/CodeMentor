@@ -23,6 +23,7 @@ import ManageRequests from "./app/admin/CandidateRequests";
 import Management from "./app/admin/Management";
 import CandidateRequests from "./app/admin/CandidateRequests";
 import TestSection from "./app/member/TestSection";
+import PageNotFound from "./components/PageNotFound";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 if (!PUBLISHABLE_KEY) {
@@ -117,9 +118,13 @@ const router = createBrowserRouter([
     path: "/Sign-up",
     element: <SignUpForm />,
   },
+  // {
+  //   path: "/404",
+  //   element: <Unauthorized />,
+  // },
   {
-    path: "/unauthorzied",
-    element: <Unauthorized />,
+    path: "*",
+    element: <PageNotFound />,
   },
 ]);
 createRoot(document.getElementById("root")).render(

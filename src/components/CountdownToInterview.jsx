@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useAssignTestStore from "@/store/useAssignTestStore";
-function CountdownToInterview({ scheduledDateTime, testId }) {
+import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
+function CountdownToInterview({ scheduledDateTime, testId, testStatus }) {
   const [timeLeft, setTimeLeft] = useState(getTimeLeft());
   const [ready, setReady] = useState(false);
   const { updateTestStatus } = useAssignTestStore();
+  const navigate = useNavigate();
   function getTimeLeft() {
     const now = new Date().getTime();
     const target = new Date(scheduledDateTime).getTime();
@@ -49,13 +52,42 @@ function CountdownToInterview({ scheduledDateTime, testId }) {
           </span>
         </p>
       ) : (
-        <Link
-          onClick={() => updateTestStatus(testId, "in-progress")}
-          to={`/user/editor/${testId}`}
-          className="mt-2 cursor-pointer text-sm bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-md transition"
+        <Button
+          onClick={() => {
+            if (testStatus === "Completed" || testStatus === "in-progress")
+              return;
+            updateTestStatus(testId, "in-progress");
+            navigate(`/user/editor/${testId}`);
+          }}
+          className={`mt-2 text-sm px-4 py-1.5 rounded-md transition ${
+            testStatus === "Completed" || testStatus === "in-progress"
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-green-600 hover:bg-green-700 text-white"
+          }`}
         >
-          Start Test
-        </Link>
+          {testStatus === "Completed"
+            ? "Completed"
+            : testStatus === "in-progress"
+            ? "Test Started"
+            : "Start Test"}
+        </Button>
+        // <Button
+        //   component={Link}
+        //   to={`/user/editor/${testId}`}
+        //   onClick={() => updateTestStatus(testId, "in-progress")}
+        //   disabled={testStatus === "Completed" || testStatus === "in-progress"}
+        //   className={`mt-2 text-sm px-4 py-1.5 rounded-md transition ${
+        //     testStatus === "Completed" || testStatus === "in-progress"
+        //       ? "bg-gray-400 cursor-not-allowed"
+        //       : "bg-green-600 hover:bg-green-700 text-white"
+        //   }`}
+        // >
+        //   {testStatus === "Completed"
+        //     ? "Completed"
+        //     : testStatus === "in-progress"
+        //     ? "Test Started"
+        //     : "Start Test"}
+        // </Button>
       )}
     </div>
   );

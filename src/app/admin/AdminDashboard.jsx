@@ -7,7 +7,7 @@ export default function AdminDashboard() {
     { name: "Requests", redirect: "/admin/management" },
     // { name: "Rooms", redirect: "rooms" },
     { name: "Test Catalog", redirect: "overview" },
-    { name: "Users", redirect: "users" },
+    // { name: "Users", redirect: "users" },
   ];
   return (
     <div className="bg-gray-100 text-gray-800 min-h-screen">

@@ -68,7 +68,7 @@ export const interviewers = [
     name: "Interviewer4",
   },
 ];
-export const totalTime = [15, 30, 45, 60];
+export const totalTime = [5, 10, 15, 30, 45, 60];
 export const interviews = [
   {
     id: 1,

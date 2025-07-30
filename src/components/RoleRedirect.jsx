@@ -14,7 +14,7 @@ export default function RoleRedirect() {
     } else if (role === "member") {
       navigate("/user", { replace: true });
     } else {
-      navigate("/unauthorized", { replace: true });
+      navigate("/404", { replace: true });
     }
   }, [user, navigate]);
 

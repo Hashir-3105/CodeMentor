@@ -4,6 +4,7 @@ import CountdownToInterview from "@/components/CountdownToInterview";
 import useAssignTestStore from "@/store/useAssignTestStore";
 import { useUser } from "@clerk/clerk-react";
 import InterviewSkeleton from "./InterviewSkeleton";
+import UpdatesPage from "@/components/common/UpdatesPage";
 
 function TestSection() {
   const { assignedTest, fetchAssignedTest, loading, hasFetch } =
@@ -22,11 +23,11 @@ function TestSection() {
       {loading ? (
         <InterviewSkeleton />
       ) : hasFetch && assignedTest.length === 0 ? (
-        <div className="flex justify-center items-center h-80">
-          <div className="text-center text-gray-500">
-            <Calendar className="w-10 h-10 mx-auto mb-4 text-gray-400" />
-            <p className="text-lg font-medium">No interviews scheduled yet</p>
-          </div>
+        <div>
+          <UpdatesPage
+            updateHeading="No tests assigned yet"
+            updateText="Please check back later. Your test will appear here once it has been assigned by the admin."
+          />
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -84,6 +85,7 @@ function TestSection() {
                 <CountdownToInterview
                   scheduledDateTime={test.scheduled_datetime}
                   testId={test.id}
+                  testStatus={test.status}
                 />
               )}
             </div>

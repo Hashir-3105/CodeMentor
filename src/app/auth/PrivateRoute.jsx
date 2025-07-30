@@ -14,7 +14,7 @@ export default function PrivateRoute({ children, allowedRoles = [] }) {
   const role = user?.publicMetadata?.role;
   console.log("Role Of User", role);
   if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
-    return <Navigate to="/unauthorzied" replace />;
+    return <Navigate to="/404" replace />;
   }
   return children;
 }

@@ -130,13 +130,14 @@ export default function Management() {
                       <div className="w-24 bg-gray-200 rounded-full h-2">
                         <div
                           className="bg-blue-600 h-2 rounded-full"
-                          style={{ width: `${test.progress}%` }}
+                          style={{ width: `${test.duration_minutes}%` }}
                         ></div>
                       </div>
                       <Button
-                        onClick={() =>
-                          navigate(`/admin/editor/${test.user_id}/${test.id}`)
-                        }
+                        onClick={() => {
+                          if (test.status === "Completed" || "Pending") return;
+                          navigate(`/admin/editor/${test.user_id}/${test.id}`);
+                        }}
                         // onClick={() =>
                         //   window.open(
                         //     `/admin/editor/${test.user_id}/${test.id}`,

@@ -13,6 +13,7 @@ import useCandidatesStore from "@/store/useCandidatesStore";
 import { TimerPicker } from "@/components/TimerPicker";
 import Skeleton from "./Skeleton";
 import { useSubmitRequests } from "@/hooks/useSubmitRequests";
+import UpdatesPage from "@/components/common/UpdatesPage";
 
 function CandidateRequests() {
   const {
@@ -85,8 +86,13 @@ function CandidateRequests() {
             <Skeleton />
           </div>
         ) : hasFetch && filteredCandidates.length === 0 ? (
-          <div className="col-span-full flex justify-center items-center py-10 text-gray-500 text-lg font-medium border rounded-xl bg-white shadow">
-            No Requests yet
+          <div>
+            <UpdatesPage
+              updateHeading={"No Requests Yet"}
+              updateText={
+                "Candidates will appear here once requests are received."
+              }
+            />
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -33,7 +33,7 @@ export function useAdminManagement() {
     },
     {
       icon: <Code className="h-8 w-8 text-green-600" />,
-      status: "Completed Today",
+      status: "Completed",
       count: completedTest.length,
     },
   ];

@@ -13,6 +13,7 @@ import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import useQuestionStore from "@/store/useQuestionStore";
 import { createInputHandler } from "@/lib/utils";
+// import { Trash2 } from "lucide-react";
 import { useSubmitQuestions } from "@/hooks/useSubmitQuestions";
 const animatedComponents = makeAnimated();
 
@@ -25,8 +26,7 @@ function TestCatalog() {
     setErrors,
     setForm,
     intQ,
-    expectedOutput,
-    // intCategory,
+    intCategory,
     diffLevel,
   } = useSubmitQuestions();
 
@@ -54,7 +54,7 @@ function TestCatalog() {
         </button>
       </div>
 
-      <div className="flex flex-wrap gap-4 mb-4">
+      {/* <div className="flex flex-wrap gap-4 mb-4">
         <input
           placeholder="Search questions..."
           className="w-full sm:w-[300px] border rounded-lg px-3"
@@ -79,7 +79,7 @@ function TestCatalog() {
             <SelectItem value="Hard">Hard</SelectItem>
           </SelectContent>
         </UISelect>
-      </div>
+      </div> */}
       <div className="border rounded-lg overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200 text-sm">
           <thead className="bg-gray-100">
@@ -106,7 +106,7 @@ function TestCatalog() {
           isOpen={isSelected}
           onClose={() => {
             setIsSelected(false),
-              setForm({ intQ: "", expectedOutput: "", diffLevel: "" }),
+              setForm({ intQ: "", intCategory: "", diffLevel: "" }),
               setErrors({});
           }}
           onSubmit={async () => {
@@ -127,15 +127,13 @@ function TestCatalog() {
               </div>
               <div className="flex flex-col gap-0.5">
                 <Input
-                  placeholder={"Add answer..."}
-                  name={"expectedOutput"}
-                  value={expectedOutput}
-                  onChange={handleInputChange("expectedOutput")}
+                  placeholder={"Add Category..."}
+                  name={"intCategory"}
+                  value={intCategory}
+                  onChange={handleInputChange("intCategory")}
                 />
-                {errors.expectedOutput && (
-                  <p className="text-red-500 text-sm">
-                    {errors.expectedOutput}
-                  </p>
+                {errors.intCategory && (
+                  <p className="text-red-500 text-sm">{errors.intCategory}</p>
                 )}
               </div>
               <Select
