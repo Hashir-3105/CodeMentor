@@ -12,6 +12,8 @@ import { useAdminManagement } from "@/hooks/useAdminManagement";
 import useAssignTestStore from "@/store/useAssignTestStore";
 import { useNavigate } from "react-router-dom";
 import CountDown from "./CountDown";
+// import AdminNotification from "./AdminNotification";
+// import Toaster from "@/components/common/Toaster";
 
 export default function Management() {
   const { dispayCardData } = useAdminManagement();
@@ -144,6 +146,8 @@ export default function Management() {
           </CardContent>
         </Card>
       </div>
+      {/* <AdminNotification />
+      <Toaster /> */}
     </div>
   );
 }

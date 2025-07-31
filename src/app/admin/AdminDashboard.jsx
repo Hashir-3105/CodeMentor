@@ -1,14 +1,62 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { UserButton } from "@clerk/clerk-react";
+import { supabase } from "@/lib/supabaseClient";
+
 export default function AdminDashboard() {
+  const [requestCount, setRequestCount] = useState(0);
+
   const adminAsides = [
     { name: "Dashboard", redirect: "/admin/dashboard" },
     { name: "Requests", redirect: "/admin/management" },
-    // { name: "Rooms", redirect: "rooms" },
     { name: "Test Catalog", redirect: "overview" },
-    // { name: "Users", redirect: "users" },
   ];
+
+  const fetchPendingCount = async () => {
+    const { count } = await supabase
+      .from("contact_submissions")
+      .select("*", { count: "exact" })
+      .eq("status", "pending");
+
+    if (count !== null) setRequestCount(count);
+  };
+
+  useEffect(() => {
+    fetchPendingCount();
+  }, []);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("contact-submissions")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "contact_submissions" },
+        async (payload) => {
+          console.log("INSERT EVENT /-/-/-/:", payload);
+          if (payload.new.status === "pending") {
+            await fetchPendingCount();
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "contact_submissions" },
+        async (payload) => {
+          console.log("UPDATE EVENT <><><><>:", payload);
+          if (
+            payload.eventType === "INSERT" ||
+            payload.eventType === "UPDATE"
+          ) {
+            await fetchPendingCount();
+          }
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   return (
     <div className="bg-gray-100 text-gray-800 min-h-screen">
       <header className="flex items-center justify-between px-6 py-4 bg-white shadow-sm border-b border-gray-200">
@@ -18,31 +66,36 @@ export default function AdminDashboard() {
             | Admin Panel
           </span>
         </div>
-        <div className="flex items-center gap-3">
-          <UserButton />
+        <div className="flex gap-2 items-center">
+          <div className="flex items-center gap-3">
+            <UserButton />
+          </div>
         </div>
       </header>
 
       <div className="flex h-[calc(100vh-64px)]">
         <aside className="w-64 bg-white h-full shadow-md p-6 space-y-4">
           <nav className="flex flex-col gap-4">
-            {adminAsides.map((item, index) => {
-              return (
-                <NavLink
-                  key={index}
-                  to={item.redirect}
-                  className={({ isActive }) =>
-                    `px-4 py-2 rounded-md font-medium transition ${
-                      isActive
-                        ? "bg-blue-600 text-white"
-                        : "text-gray-700 hover:bg-gray-200"
-                    }`
-                  }
-                >
-                  {item.name}
-                </NavLink>
-              );
-            })}
+            {adminAsides.map((item, index) => (
+              <NavLink
+                key={index}
+                to={item.redirect}
+                className={({ isActive }) =>
+                  `relative px-4 py-2 rounded-md font-medium transition ${
+                    isActive
+                      ? "bg-blue-600 text-white"
+                      : "text-gray-700 hover:bg-gray-200"
+                  }`
+                }
+              >
+                {item.name}
+                {item.name === "Requests" && requestCount > 0 && (
+                  <span className="absolute right-4 top-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                    {requestCount}
+                  </span>
+                )}
+              </NavLink>
+            ))}
           </nav>
         </aside>
         <main className="flex-1 overflow-y-auto">
