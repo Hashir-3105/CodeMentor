@@ -50,7 +50,7 @@ export default function SignInForm() {
         className="bg-[#757978] text-white p-8 rounded-lg shadow-md w-full max-w-sm"
       >
         <h2 className="text-2xl font-bold mb-4 text-center">
-          Sign In to Code Crash
+          Sign In to Code Mentor
         </h2>
         <div className="mb-4 text-center">
           <p className="font-semibold">Welcome back</p>
