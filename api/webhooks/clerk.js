@@ -1,12 +1,17 @@
 import { Webhook } from "svix";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 
-export const config = {
-  api: { bodyParser: false }, // Required for Svix verification
-};
+export const config = { api: { bodyParser: false } };
 
 export default async function handler(req, res) {
-  console.log("📩 Webhook endpoint hit!", req.method);
+  console.log("📩 Webhook request received");
+
+  if (!process.env.CLERK_SECRET_KEY) {
+    console.error("❌ Missing CLERK_SECRET_KEY");
+    return res
+      .status(400)
+      .json({ error: "Missing Clerk Secret Key or API Key" });
+  }
 
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
@@ -18,7 +23,6 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Server misconfiguration" });
   }
 
-  // Get raw body for signature verification
   const rawBody = await new Promise((resolve) => {
     let data = "";
     req.on("data", (chunk) => (data += chunk));
@@ -36,7 +40,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Invalid signature" });
   }
 
-  // Handle user.created event
   if (evt.type === "user.created") {
     const { id } = evt.data;
     console.log("🛠 Updating role for:", id);
