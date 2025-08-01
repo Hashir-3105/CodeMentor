@@ -1,44 +1,55 @@
 import { Webhook } from "svix";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 
-export const config = { api: { bodyParser: false } };
+export const config = {
+  api: { bodyParser: false }, // Required for Svix verification
+};
 
 export default async function handler(req, res) {
-  console.log("📩 Webhook request received");
+  console.log("📩 Webhook endpoint hit!", req.method);
 
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  console.log(
-    "🔑 Webhook Secret:",
-    process.env.CLERK_WEBHOOK_SECRET ? "Loaded" : "Missing"
-  );
+  const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    console.error("❌ Missing CLERK_WEBHOOK_SECRET");
+    return res.status(500).json({ error: "Server misconfiguration" });
+  }
 
+  // Get raw body for signature verification
   const rawBody = await new Promise((resolve) => {
     let data = "";
     req.on("data", (chunk) => (data += chunk));
     req.on("end", () => resolve(data));
   });
 
-  console.log("📦 Raw body length:", rawBody.length);
+  const wh = new Webhook(webhookSecret);
 
+  let evt;
   try {
-    const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
-    const evt = wh.verify(rawBody, req.headers);
+    evt = wh.verify(rawBody, req.headers);
     console.log("✅ Webhook verified:", evt.type);
+  } catch (err) {
+    console.error("❌ Webhook signature verification failed:", err.message);
+    return res.status(400).json({ error: "Invalid signature" });
+  }
 
-    if (evt.type === "user.created") {
-      console.log("🛠 Updating role for:", evt.data.id);
-      await clerkClient.users.updateUser(evt.data.id, {
+  // Handle user.created event
+  if (evt.type === "user.created") {
+    const { id } = evt.data;
+    console.log("🛠 Updating role for:", id);
+
+    try {
+      await clerkClient.users.updateUser(id, {
         publicMetadata: { role: "member" },
       });
       console.log("✅ Role updated successfully");
+    } catch (err) {
+      console.error("❌ Role update failed:", err.message);
     }
-
-    return res.json({ success: true });
-  } catch (err) {
-    console.error("❌ Webhook failed:", err.message);
-    return res.status(400).json({ error: err.message });
   }
+
+  return res.json({ success: true });
 }
