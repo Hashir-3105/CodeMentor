@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSignIn } from "@clerk/clerk-react";
-import { Loader } from "lucide-react";
+import { Loader, Eye, EyeOff } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
@@ -11,6 +11,7 @@ export default function SignInForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // 👈 state for toggling password
   const { isSignedIn, user } = useUser();
   const navigate = useNavigate();
   const role = user?.publicMetadata?.role;
@@ -78,22 +79,28 @@ export default function SignInForm() {
             required
           />
         </div>
-        <div className="mb-6">
+        <div className="mb-6 relative">
           <label className="block mb-1">Password</label>
-          <input
-            type="password"
-            className={`w-full px-4 py-2 border  ${
-              error && password === "" ? "border-[#8b311a]" : "border-[#919595]"
-            } rounded focus:outline-none`}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          {/* <div className="flex justify-end mt-2">
-                        <Link to={'/reset-password'} className="cursor-pointer text-[12px] text-blue-600 hover:underline">
-                            Forget Password?
-                        </Link>
-                    </div> */}
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              className={`w-full px-4 py-2 border ${
+                error && password === ""
+                  ? "border-[#8b311a]"
+                  : "border-[#919595]"
+              } rounded focus:outline-none pr-10`} // extra padding for icon
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-3 flex items-center text-gray-300 hover:text-white"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
         </div>
 
         <button
