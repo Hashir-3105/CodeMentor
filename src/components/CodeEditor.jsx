@@ -1,64 +1,94 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { io } from "socket.io-client";
-import { useEffect } from "react";
 import Select from "react-select";
 import useAssignTestStore from "@/store/useAssignTestStore";
 import { useParams } from "react-router-dom";
-import { Play, X } from "lucide-react";
+import { Play } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
-// import LoadingSuccess from "./LoadingSuccess";
 import CountDownTimer from "./common/CountDownTimer";
-const languages = [
-  { id: 63, name: "JavaScript (Node.js)" },
-  { id: 71, name: "Python (3.8)" },
-  { id: 62, name: "Java (OpenJDK)" },
-  { id: 52, name: "C++ (GCC)" },
-  { id: 50, name: "C (GCC)" },
-];
+import { supabase } from "@/lib/supabaseClient";
+import { languages } from "@/lib/Constants";
+import { useNavigate } from "react-router-dom";
+
 const socket = io("http://localhost:5000");
+
 function CodeEditor() {
   const [code, setCode] = useState("");
+  const [codeByQuestion, setCodeByQuestion] = useState({});
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [output, setOutput] = useState("");
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
+  const [submittedQuestions, setSubmittedQuestions] = useState([]);
+  const [isCodeValid, setIsCodeValid] = useState(false);
+
   const [languageId, setLanguageId] = useState({
     name: languages[0].name,
     value: languages[0],
   });
+
   const { assignedTest, fetchAssignedTest } = useAssignTestStore();
   const { userId, testId } = useParams();
   const { user } = useUser();
-
+  const navigate = useNavigate();
+  // Fetch assigned test
   useEffect(() => {
     const idToFetch = userId || user?.id;
-    if (idToFetch && testId) {
-      fetchAssignedTest(idToFetch, testId);
-    }
+    if (idToFetch && testId) fetchAssignedTest(idToFetch, testId);
   }, [userId, testId, user?.id]);
+
+  // Auto-select the first question
+  useEffect(() => {
+    if (assignedTest && assignedTest.length > 0) {
+      const firstQuestion = assignedTest[0].question_list[0];
+      setSelectedQuestion(firstQuestion);
+    }
+  }, [assignedTest]);
+
+  // Load stored code for selected question
+  useEffect(() => {
+    if (selectedQuestion) {
+      const questionKey =
+        typeof selectedQuestion === "string"
+          ? selectedQuestion
+          : selectedQuestion.id;
+      setCode(codeByQuestion[questionKey] || "");
+    }
+  }, [selectedQuestion]);
 
   const languageOptions = languages.map((lang) => ({
     label: lang.name,
     value: lang,
   }));
+
   const handleEditorChange = (value) => {
+    const questionKey =
+      typeof selectedQuestion === "string"
+        ? selectedQuestion
+        : selectedQuestion?.id;
+
     setCode(value);
+    setCodeByQuestion((prev) => ({
+      ...prev,
+      [questionKey]: value,
+    }));
+
     socket.emit("code_change", value);
   };
-  useEffect(() => {
-    socket.on("code_change", (incomingCode) => {
-      setCode(incomingCode);
-    });
 
-    return () => {
-      socket.off("code_change");
-    };
+  useEffect(() => {
+    socket.on("code_change", (incomingCode) => setCode(incomingCode));
+    return () => socket.off("code_change");
   }, []);
 
   const runCode = async () => {
+    if (!selectedQuestion) return alert("Please select a question first!");
+
     setLoading(true);
     setOutput("");
     setSuccessMessage(false);
+
     const response = await fetch(
       "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true",
       {
@@ -78,29 +108,91 @@ function CodeEditor() {
     );
 
     const result = await response.json();
-    console.log(result);
     setLoading(false);
 
     if (result.status && result.status.description === "Accepted") {
       setSuccessMessage(true);
-      setTimeout(() => {
-        setSuccessMessage(false);
-      }, 3000);
+      setIsCodeValid(true);
+      setTimeout(() => setSuccessMessage(false), 3000);
     } else {
-      setSuccessMessage(false);
+      setIsCodeValid(false);
     }
-    if (result.stderr) {
-      setOutput(result.stderr);
-    } else if (result.compile_output) {
-      setOutput(result.compile_output);
+
+    if (result.stderr) setOutput(result.stderr);
+    else if (result.compile_output) setOutput(result.compile_output);
+    else setOutput(result.stdout || "No Output");
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedQuestion) return alert("Please select a question first!");
+
+    const questionKey =
+      typeof selectedQuestion === "string"
+        ? selectedQuestion
+        : selectedQuestion.id;
+
+    const codeToSubmit = codeByQuestion[questionKey] || "";
+
+    const { data, error } = await supabase
+      .from("question_progress")
+      .upsert(
+        {
+          user_id: user?.id,
+          question_id: questionKey,
+          is_completed: true,
+          code: codeToSubmit,
+        },
+        { onConflict: ["user_id", "question_id"] }
+      )
+      .select();
+
+    if (error) {
+      console.error("❌ Error saving progress:", error);
     } else {
-      setOutput(result.stdout || "No Output");
+      console.log("✅ Progress saved:", data);
+      setSubmittedQuestions((prev) => [...prev, questionKey]);
+
+      const allQuestions = assignedTest.flatMap((test) => test.question_list);
+      const currentIndex = allQuestions.findIndex(
+        (q) =>
+          (typeof q === "string" ? q : q.id) ===
+          (typeof selectedQuestion === "string"
+            ? selectedQuestion
+            : selectedQuestion.id)
+      );
+
+      if (currentIndex !== -1 && currentIndex < allQuestions.length - 1) {
+        setSelectedQuestion(allQuestions[currentIndex + 1]);
+      }
     }
+  };
+  const handleTimeUp = async () => {
+    console.log("⏰ Time is up! Auto-submitting...");
+
+    // ✅ Mark test as completed in Supabase
+    await supabase
+      .from("test_assign_submissions")
+      .update({ status: "Completed" })
+      .eq("id", testId);
+
+    // Optionally save all unsaved code progress
+    for (const questionId in codeByQuestion) {
+      await supabase.from("question_progress").upsert(
+        {
+          user_id: user?.id,
+          question_id: questionId,
+          is_completed: true,
+          code: codeByQuestion[questionId],
+        },
+        { onConflict: ["user_id", "question_id"] }
+      );
+    }
+    navigate("/");
   };
 
   return (
     <>
-      <div className=" mt-6 bg-white shadow-md p-6 dark:bg-gray-900 border border-gray-800">
+      <div className="mt-6 bg-white shadow-md p-6 dark:bg-gray-900 border border-gray-800">
         <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
           Your Assigned Questions
         </h2>
@@ -109,8 +201,8 @@ function CodeEditor() {
             <CountDownTimer
               testId={assignedTest[0].id}
               durationInMinutes={assignedTest[0].duration_minutes}
+              onTimeUp={handleTimeUp}
             />
-
             {assignedTest.map((test, index) => (
               <div
                 key={index}
@@ -118,10 +210,30 @@ function CodeEditor() {
               >
                 <ul className="list-disc pl-5 space-y-1 text-sm text-gray-300">
                   {test.question_list.map((q, qIndex) => (
-                    <li key={qIndex}>
-                      {typeof q === "string"
-                        ? q
-                        : q.question || JSON.stringify(q)}
+                    <li
+                      key={qIndex}
+                      onClick={() => {
+                        const questionKey = typeof q === "string" ? q : q.id;
+                        if (!submittedQuestions.includes(questionKey)) {
+                          setSelectedQuestion(q);
+                        }
+                      }}
+                      className={`cursor-pointer hover:text-blue-400 
+                      ${
+                        (typeof q === "string" && selectedQuestion === q) ||
+                        (typeof q === "object" && selectedQuestion?.id === q.id)
+                          ? "text-blue-500 font-bold"
+                          : ""
+                      }
+                      ${
+                        submittedQuestions.includes(
+                          typeof q === "string" ? q : q.id
+                        )
+                          ? "line-through cursor-not-allowed opacity-70"
+                          : ""
+                      }`}
+                    >
+                      {typeof q === "string" ? q : q.question}
                     </li>
                   ))}
                 </ul>
@@ -140,7 +252,7 @@ function CodeEditor() {
             <span className="text-sm text-gray-300">
               {languageId.value.name}
             </span>
-            <div className="flex justify-between gap-2">
+            <div className="flex gap-2">
               <Select
                 options={languageOptions}
                 value={languageId}
@@ -148,19 +260,23 @@ function CodeEditor() {
                 classNamePrefix="select"
                 className="text-black w-64"
               />
-
               <button
                 onClick={runCode}
                 className="bg-indigo-600 px-4 py-1 rounded hover:bg-indigo-700 text-sm cursor-pointer"
               >
-                {/* {loading ? "Running..." : "Run Code"} */}
                 <Play />
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={!isCodeValid}
+                className="bg-green-600 px-4 py-1 rounded hover:bg-green-700 text-sm cursor-pointer"
+              >
+                Submit
               </button>
             </div>
           </div>
           <Editor
             height="calc(100vh - 160px)"
-            className=""
             defaultLanguage="javascript"
             theme="vs-dark"
             value={code}
@@ -178,11 +294,14 @@ function CodeEditor() {
             Output
           </div>
           <div className="p-4 text-sm whitespace-pre-wrap overflow-y-auto max-h-[calc(100vh - 180px)]">
-            {successMessage ? (
+            {loading ? (
+              <p className="text-yellow-400">Running code...</p>
+            ) : successMessage ? (
               <div className="bg-green-100 text-green-700 p-3 rounded-lg text-center">
                 <h3 className="font-bold">✅ Code Accepted!</h3>
                 <p className="text-xs mt-1">
-                  Well done! You solved the problem successfully.
+                  Well done! Your code ran successfully now you can Submit your
+                  code.
                 </p>
               </div>
             ) : (

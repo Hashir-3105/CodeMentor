@@ -11,7 +11,7 @@ export default function SignInForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // 👈 state for toggling password
+  const [showPassword, setShowPassword] = useState(false);
   const { isSignedIn, user } = useUser();
   const navigate = useNavigate();
   const role = user?.publicMetadata?.role;
@@ -88,7 +88,7 @@ export default function SignInForm() {
                 error && password === ""
                   ? "border-[#8b311a]"
                   : "border-[#919595]"
-              } rounded focus:outline-none pr-10`} // extra padding for icon
+              } rounded focus:outline-none pr-10`}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

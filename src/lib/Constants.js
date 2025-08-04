@@ -68,7 +68,7 @@ export const interviewers = [
     name: "Interviewer4",
   },
 ];
-export const totalTime = [5, 10, 15, 30, 45, 60];
+export const totalTime = [1, 5, 10, 15, 30, 45, 60];
 export const interviews = [
   {
     id: 1,
@@ -123,4 +123,12 @@ export const stepsToStart = [
     title: "Track Progress",
     desc: "Visualize your learning curve over time.",
   },
+];
+
+export const languages = [
+  { id: 63, name: "JavaScript (Node.js)" },
+  { id: 71, name: "Python (3.8)" },
+  { id: 62, name: "Java (OpenJDK)" },
+  { id: 52, name: "C++ (GCC)" },
+  { id: 50, name: "C (GCC)" },
 ];

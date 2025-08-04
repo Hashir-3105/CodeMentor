@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import {
-  Select as UISelect,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
+// import {
+//   Select as UISelect,
+//   SelectTrigger,
+//   SelectValue,
+//   SelectContent,
+//   SelectItem,
+// } from "@/components/ui/select";
 import { DialogComponent } from "@/components/common/DialogComponent";
 import Input from "@/components/common/Input";
 import { questionDifficulty } from "@/lib/Constants";
@@ -13,8 +13,8 @@ import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import useQuestionStore from "@/store/useQuestionStore";
 import { createInputHandler } from "@/lib/utils";
-// import { Trash2 } from "lucide-react";
 import { useSubmitQuestions } from "@/hooks/useSubmitQuestions";
+import { X } from "lucide-react";
 const animatedComponents = makeAnimated();
 
 function TestCatalog() {
@@ -31,6 +31,9 @@ function TestCatalog() {
   } = useSubmitQuestions();
 
   const { questions: dbQuestions, fetchQuestions } = useQuestionStore();
+  const [testCases, setTestCases] = useState([
+    { input: "", expected_output: "" },
+  ]);
 
   useEffect(() => {
     fetchQuestions();
@@ -42,6 +45,20 @@ function TestCatalog() {
   }));
 
   const handleInputChange = createInputHandler(setForm, setErrors, errors);
+  const handleTestCaseChange = (index, field, value) => {
+    const updated = [...testCases];
+    updated[index][field] = value;
+    setTestCases(updated);
+  };
+
+  const addTestCase = () => {
+    setTestCases([...testCases, { input: "", expected_output: "" }]);
+  };
+
+  const removeTestCase = (index) => {
+    setTestCases(testCases.filter((_, i) => i !== index));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="flex items-center justify-between mb-6">
@@ -54,32 +71,6 @@ function TestCatalog() {
         </button>
       </div>
 
-      {/* <div className="flex flex-wrap gap-4 mb-4">
-        <input
-          placeholder="Search questions..."
-          className="w-full sm:w-[300px] border rounded-lg px-3"
-        />
-        <UISelect>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Category" />
-          </SelectTrigger>
-          <SelectContent className={"bg-white"}>
-            <SelectItem value="JavaScript">JavaScript</SelectItem>
-            <SelectItem value="React">React</SelectItem>
-            <SelectItem value="CSS">CSS</SelectItem>
-          </SelectContent>
-        </UISelect>
-        <UISelect>
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Difficulty" />
-          </SelectTrigger>
-          <SelectContent className={"bg-white"}>
-            <SelectItem value="Easy">Easy</SelectItem>
-            <SelectItem value="Medium">Medium</SelectItem>
-            <SelectItem value="Hard">Hard</SelectItem>
-          </SelectContent>
-        </UISelect>
-      </div> */}
       <div className="border rounded-lg overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200 text-sm">
           <thead className="bg-gray-100">
@@ -100,17 +91,19 @@ function TestCatalog() {
           </tbody>
         </table>
       </div>
+
       {isSelected && (
         <DialogComponent
           name={"Add Question"}
           isOpen={isSelected}
           onClose={() => {
-            setIsSelected(false),
-              setForm({ intQ: "", intCategory: "", diffLevel: "" }),
-              setErrors({});
+            setIsSelected(false);
+            setForm({ intQ: "", intCategory: "", diffLevel: "" });
+            setTestCases([{ input: "", expected_output: "" }]);
+            setErrors({});
           }}
           onSubmit={async () => {
-            await handleSubmit();
+            await handleSubmit({ testCases });
           }}
           children={
             <>
@@ -125,6 +118,7 @@ function TestCatalog() {
                   <p className="text-red-500 text-sm">{errors.intQ}</p>
                 )}
               </div>
+
               <div className="flex flex-col gap-0.5">
                 <Input
                   placeholder={"Add Category..."}
@@ -136,6 +130,7 @@ function TestCatalog() {
                   <p className="text-red-500 text-sm">{errors.intCategory}</p>
                 )}
               </div>
+
               <Select
                 options={difficultyOptions}
                 placeholder="Select..."
@@ -151,6 +146,46 @@ function TestCatalog() {
                   }));
                 }}
               />
+
+              {/* <div className="mt-4">
+                <h3 className="text-md font-semibold mb-2">Test Cases</h3>
+                {testCases.map((test, index) => (
+                  <div key={index} className="flex gap-2 mb-2">
+                    <Input
+                      placeholder="Input (e.g. 7 8)"
+                      value={test.input}
+                      onChange={(e) =>
+                        handleTestCaseChange(index, "input", e.target.value)
+                      }
+                    />
+                    <Input
+                      placeholder="Expected Output (e.g. 15)"
+                      value={test.expected_output}
+                      onChange={(e) =>
+                        handleTestCaseChange(
+                          index,
+                          "expected_output",
+                          e.target.value
+                        )
+                      }
+                    />
+                    <button
+                      onClick={() => removeTestCase(index)}
+                      className="cursor-pointer"
+                    >
+                      <X />
+                    </button>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={addTestCase}
+                  className="bg-blue-500 text-white px-3 py-1 rounded mt-2"
+                >
+                  + Add Test Case
+                </button>
+              </div> */}
             </>
           }
           cancelLabel={"Cancel"}

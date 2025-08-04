@@ -12,7 +12,7 @@ export default function PrivateRoute({ children, allowedRoles = [] }) {
     );
   if (!isSignedIn) return <Navigate to="/SignInForm" replace />;
   const role = user?.publicMetadata?.role;
-  console.log("Role Of User", role);
+  // console.log("Role Of User", role);
   if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
     return <Navigate to="/404" replace />;
   }

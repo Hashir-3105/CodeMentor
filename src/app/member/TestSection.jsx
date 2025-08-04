@@ -75,9 +75,15 @@ function TestSection() {
                     })}
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
+                {/* <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-gray-500" />
                   <span>{test.scheduled_time}</span>
+                </div> */}
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-gray-500" />
+                  <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-md text-xs font-medium">
+                    Duration: {test.duration_minutes} min
+                  </span>
                 </div>
               </div>
 

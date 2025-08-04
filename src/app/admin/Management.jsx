@@ -119,20 +119,13 @@ export default function Management() {
                       </div> */}
                       <Button
                         onClick={() => {
-                          if (
-                            test.status === "Completed" ||
-                            test.status === "Pending"
-                          )
-                            return;
+                          if (test.status !== "in-progress") return;
                           navigate(`/admin/editor/${test.user_id}/${test.id}`);
                         }}
-                        // onClick={() =>
-                        //   window.open(
-                        //     `/admin/editor/${test.user_id}/${test.id}`,
-                        //     "_blank"
-                        //   )
-                        // }
-                        className={"cursor-pointer"}
+                        disabled={
+                          test.status !== "in-progress" ||
+                          test.status === "Completed"
+                        }
                         size="sm"
                         variant="outline"
                       >

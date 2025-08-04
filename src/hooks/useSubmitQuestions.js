@@ -13,24 +13,26 @@ export function useSubmitQuestions() {
   });
   const { addQuestion } = useQuestionStore();
   const { intQ, intCategory, diffLevel, expectedOutput } = form;
-  const handleSubmit = async () => {
+  const handleSubmit = async ({ testCases }) => {
     const validateErrors = validationsTestCatalog(form);
     if (Object.keys(validateErrors).length > 0) {
       setErrors(validateErrors);
       return false;
     }
+
     try {
       const { data, error } = await supabase
         .from("add_question")
         .insert([
           {
             int_question: intQ,
-            expected_output: expectedOutput,
+            expected_output: JSON.stringify(testCases), // Save array as JSON
             que_category: intCategory,
             question_difficulty: diffLevel,
           },
         ])
         .select();
+
       if (error) throw error;
 
       addQuestion(data[0]);
@@ -40,6 +42,7 @@ export function useSubmitQuestions() {
       console.error("Submission error:", err.message);
     }
   };
+
   return {
     handleSubmit,
     isSelected,

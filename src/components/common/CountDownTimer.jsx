@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
-export default function CountDownTimer({ testId, durationInMinutes }) {
+export default function CountDownTimer({
+  testId,
+  durationInMinutes,
+  onTimeUp,
+}) {
   const [timeRemaining, setTimeRemaining] = useState(null);
   const [finished, setFinished] = useState(false);
 
@@ -18,6 +22,7 @@ export default function CountDownTimer({ testId, durationInMinutes }) {
       if (data?.status === "Completed") {
         setTimeRemaining(0);
         setFinished(true);
+        onTimeUp?.();
         return;
       }
 
@@ -39,6 +44,7 @@ export default function CountDownTimer({ testId, durationInMinutes }) {
 
       if (remaining === 0) {
         setFinished(true);
+        onTimeUp?.();
       }
     };
 
@@ -54,6 +60,7 @@ export default function CountDownTimer({ testId, durationInMinutes }) {
         if (prev <= 1) {
           clearInterval(interval);
           setFinished(true);
+          onTimeUp?.();
           return 0;
         }
         return prev - 1;
