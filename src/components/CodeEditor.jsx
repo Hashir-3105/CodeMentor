@@ -11,7 +11,7 @@ import CountDownTimer from "./common/CountDownTimer";
 import { supabase } from "@/lib/supabaseClient";
 import { languages } from "@/lib/Constants";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://codementor-backend-production.up.railway.app/");
 
 function CodeEditor() {
   const [code, setCode] = useState("");
