@@ -63,7 +63,7 @@ function MemberProfile() {
       const uniqueQuestionIds = [
         ...new Set(assignedQuestions.map((q) => q.question_id)),
       ];
-      setTotalQuestionsCount(uniqueQuestionIds.length);
+      setTotalQuestionsCount(assignedQuestions.length);
 
       // 3️⃣ Fetch completed questions for these unique IDs
       const { data: completedQuestionsData, error: completedError } =
@@ -92,29 +92,36 @@ function MemberProfile() {
       setProgressValue(percentage);
 
       // 4️⃣ Category-wise progress (based on unique questions)
+      // 4️⃣ Category-wise progress (based on assigned questions)
+      // 4️⃣ Category-wise progress
       const categoryMap = {};
-      uniqueQuestionIds.forEach((qId) => {
-        const question = assignedQuestions.find((q) => q.question_id === qId);
-        if (question) {
-          const category = question.add_question.que_category;
-          if (!categoryMap[category]) {
-            categoryMap[category] = { completed: 0, total: 0 };
-          }
-          categoryMap[category].total += 1;
-          if (completedIds.includes(qId)) {
-            categoryMap[category].completed += 1;
-          }
+
+      // Count total questions (with duplicates) for each category
+      assignedQuestions.forEach((q) => {
+        const category = q.add_question.que_category;
+
+        if (!categoryMap[category]) {
+          categoryMap[category] = { completed: new Set(), total: 0 };
+        }
+
+        // Always count total assigned questions
+        categoryMap[category].total += 1;
+
+        // If this question is completed, add it to completed set (avoiding duplicates)
+        if (completedIds.includes(q.question_id)) {
+          categoryMap[category].completed.add(q.question_id);
         }
       });
 
+      // Convert map to array
       const categoryStats = Object.entries(categoryMap).map(
         ([category, stats]) => ({
           category,
-          completed: stats.completed,
+          completed: stats.completed.size, // unique completed questions
           total: stats.total,
           progress:
             stats.total > 0
-              ? Math.round((stats.completed / stats.total) * 100)
+              ? Math.round((stats.completed.size / stats.total) * 100)
               : 0,
         })
       );

@@ -81,7 +81,6 @@ function CodeEditor() {
     return () => socket.off("code_change");
   }, []);
 
-  // ✅ Run code
   const runCode = async () => {
     if (!selectedQuestion) return alert("Please select a question first!");
     setLoading(true);
