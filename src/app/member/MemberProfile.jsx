@@ -26,7 +26,7 @@ function MemberProfile() {
     const fetchProgress = async () => {
       if (!user?.id) return;
 
-      console.log("🔄 Fetching progress for user:", user.id);
+      // console.log("🔄 Fetching progress for user:", user.id);
 
       // 1️⃣ Fetch all test IDs for the user
       const { data: assignedTests, error: testError } = await supabase
