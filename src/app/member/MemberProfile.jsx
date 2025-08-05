@@ -11,6 +11,7 @@ function MemberProfile() {
   const [progressValue, setProgressValue] = useState(0);
   const [completedQuestionsCount, setCompletedQuestionsCount] = useState(0);
   const [totalQuestionsCount, setTotalQuestionsCount] = useState(0);
+  const [categoryProgress, setCategoryProgress] = useState([]);
 
   const [aboutRef, aboutInView] = useInView({
     triggerOnce: true,
@@ -21,121 +22,104 @@ function MemberProfile() {
     threshold: 0.2,
   });
 
-  const fetchProgress = async () => {
-    if (!user?.id) return;
-
-    console.log("🔄 Fetching progress for user:", user.id);
-
-    // Fetch tests assigned to this user
-    const { data: assignedTests, error: assignedError } = await supabase
-      .from("test_assign_submissions")
-      .select("question_list, status")
-      .eq("user_id", user.id);
-
-    if (assignedError) {
-      console.error("❌ Error fetching assigned tests:", assignedError);
-      return;
-    }
-
-    console.log("📌 Assigned Tests:", assignedTests);
-
-    // Filter tests (if status column exists)
-    const validTests =
-      assignedTests?.filter(
-        (test) =>
-          !test.status ||
-          test.status === "completed" ||
-          test.status === "active"
-      ) || [];
-
-    // Calculate total questions
-    const totalQuestions = validTests.reduce((acc, test) => {
-      const questions = Array.isArray(test.question_list)
-        ? test.question_list
-        : typeof test.question_list === "string"
-        ? JSON.parse(test.question_list)
-        : [];
-      return acc + questions.length;
-    }, 0);
-
-    setTotalQuestionsCount(totalQuestions);
-
-    // Fetch completed questions for this user
-    const { data: completedQuestions, error: completedError } = await supabase
-      .from("question_progress")
-      .select("question_id")
-      .eq("user_id", user.id)
-      .eq("is_completed", true);
-
-    if (completedError) {
-      console.error("❌ Error fetching completed questions:", completedError);
-      return;
-    }
-
-    console.log("✅ Completed Questions:", completedQuestions);
-
-    const completed = completedQuestions?.length || 0;
-    setCompletedQuestionsCount(completed);
-
-    const percentage =
-      totalQuestions > 0 ? Math.round((completed / totalQuestions) * 100) : 0;
-    setProgressValue(percentage);
-  };
-
   useEffect(() => {
     const fetchProgress = async () => {
       if (!user?.id) return;
 
       console.log("🔄 Fetching progress for user:", user.id);
 
-      // 1️⃣ Fetch assigned tests for this user
-      const { data: assignedTests, error: assignedError } = await supabase
+      // 1️⃣ Fetch all test IDs for the user
+      const { data: assignedTests, error: testError } = await supabase
         .from("test_assign_submissions")
-        .select("question_list, status")
+        .select("id")
         .eq("user_id", user.id);
 
-      if (assignedError) {
-        console.error("❌ Error fetching assigned questions:", assignedError);
+      if (testError) {
+        console.error("❌ Error fetching tests:", testError);
         return;
       }
 
-      console.log("📌 Assigned Tests:", assignedTests);
+      const testIds = assignedTests.map((t) => t.id);
+      if (testIds.length === 0) {
+        setTotalQuestionsCount(0);
+        setCompletedQuestionsCount(0);
+        setProgressValue(0);
+        setCategoryProgress([]);
+        return;
+      }
 
-      // 2️⃣ Calculate total questions (properly handle arrays)
-      const totalQuestions =
-        assignedTests?.reduce((acc, test) => {
-          if (Array.isArray(test.question_list)) {
-            return acc + test.question_list.length;
-          }
-          return acc;
-        }, 0) || 0;
+      // 2️⃣ Fetch all assigned questions for these tests
+      const { data: assignedQuestions, error: questionsError } = await supabase
+        .from("test_assign_questions")
+        .select("question_id, add_question(que_category)")
+        .in("test_id", testIds);
 
-      setTotalQuestionsCount(totalQuestions);
-      console.log("✅ Total Questions:", totalQuestions);
+      if (questionsError) {
+        console.error("❌ Error fetching assigned questions:", questionsError);
+        return;
+      }
 
-      // 3️⃣ Fetch completed questions
+      // ✅ Deduplicate question IDs
+      const uniqueQuestionIds = [
+        ...new Set(assignedQuestions.map((q) => q.question_id)),
+      ];
+      setTotalQuestionsCount(uniqueQuestionIds.length);
+
+      // 3️⃣ Fetch completed questions for these unique IDs
       const { data: completedQuestionsData, error: completedError } =
         await supabase
           .from("question_progress")
           .select("question_id")
           .eq("user_id", user.id)
-          .eq("is_completed", true);
+          .eq("is_completed", true)
+          .in("question_id", uniqueQuestionIds);
 
       if (completedError) {
         console.error("❌ Error fetching completed questions:", completedError);
         return;
       }
 
-      console.log("✅ Completed Questions:", completedQuestionsData);
+      const completedIds = [
+        ...new Set(completedQuestionsData.map((q) => q.question_id)),
+      ];
+      setCompletedQuestionsCount(completedIds.length);
 
-      const completed = completedQuestionsData?.length || 0;
-      setCompletedQuestionsCount(completed);
-
-      // 4️⃣ Calculate percentage
+      // ✅ Calculate overall percentage
       const percentage =
-        totalQuestions > 0 ? Math.round((completed / totalQuestions) * 100) : 0;
-
+        uniqueQuestionIds.length > 0
+          ? Math.round((completedIds.length / uniqueQuestionIds.length) * 100)
+          : 0;
       setProgressValue(percentage);
+
+      // 4️⃣ Category-wise progress (based on unique questions)
+      const categoryMap = {};
+      uniqueQuestionIds.forEach((qId) => {
+        const question = assignedQuestions.find((q) => q.question_id === qId);
+        if (question) {
+          const category = question.add_question.que_category;
+          if (!categoryMap[category]) {
+            categoryMap[category] = { completed: 0, total: 0 };
+          }
+          categoryMap[category].total += 1;
+          if (completedIds.includes(qId)) {
+            categoryMap[category].completed += 1;
+          }
+        }
+      });
+
+      const categoryStats = Object.entries(categoryMap).map(
+        ([category, stats]) => ({
+          category,
+          completed: stats.completed,
+          total: stats.total,
+          progress:
+            stats.total > 0
+              ? Math.round((stats.completed / stats.total) * 100)
+              : 0,
+        })
+      );
+
+      setCategoryProgress(categoryStats);
     };
 
     fetchProgress();
@@ -148,6 +132,7 @@ function MemberProfile() {
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-7xl mx-auto items-start">
+        {/* About Progress */}
         <motion.div
           ref={aboutRef}
           initial="hidden"
@@ -170,6 +155,7 @@ function MemberProfile() {
           </div>
         </motion.div>
 
+        {/* Overall Progress */}
         <motion.div
           ref={progressRef}
           initial="hidden"
@@ -211,6 +197,40 @@ function MemberProfile() {
             </div>
           </div>
         </motion.div>
+
+        {/* Category Progress */}
+        <div className="col-span-1 md:col-span-2 bg-white shadow-md rounded-2xl p-8 border border-gray-200">
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+            Category Progress
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {categoryProgress.map((cat, idx) => (
+              <div
+                key={idx}
+                className="bg-gray-50 rounded-xl p-5 border border-gray-100 shadow-inner"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-800 font-medium text-lg">
+                    {cat.category}
+                  </span>
+                  <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                    {cat.progress}%
+                  </span>
+                </div>
+
+                <Progress
+                  value={cat.progress}
+                  className="h-4 bg-gray-200 rounded-full overflow-hidden [&>*]:bg-gradient-to-r [&>*]:from-green-500 [&>*]:to-emerald-500 transition-all"
+                />
+
+                <div className="flex justify-between text-xs text-gray-500 mt-2">
+                  <span>{cat.completed} Completed</span>
+                  <span>{cat.total} Total</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

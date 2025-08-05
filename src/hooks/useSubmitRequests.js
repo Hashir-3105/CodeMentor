@@ -38,8 +38,8 @@ export function useSubmitRequests() {
         alert("Please select both date and time.");
         return;
       }
-      const [hours, minutes] = selectedTime.split(":").map(Number);
 
+      const [hours, minutes] = selectedTime.split(":").map(Number);
       const localDateTime = new Date(selectedDate);
       localDateTime.setHours(hours, minutes, 0, 0);
 
@@ -49,10 +49,7 @@ export function useSubmitRequests() {
       }
 
       const payload = {
-        // interviewer_name: form.interviewersInput,
-        // room_name: form.roomInput,
         duration_minutes: form.timeInput,
-        question_list: form.questionInput,
         scheduled_on: selectedDate,
         user_id: selectedCandidate.user_id,
         candidate_name: selectedCandidate.full_name,
@@ -62,17 +59,29 @@ export function useSubmitRequests() {
           localDateTime.getTime() - localDateTime.getTimezoneOffset() * 60000
         ).toISOString(),
       };
-      console.log("Submitting:", payload);
-      const { data, error } = await supabase
+
+      // 1️⃣ Create test record
+      const { data: testData, error: testError } = await supabase
         .from("test_assign_submissions")
         .insert([payload])
         .select();
-      console.log("Insert response:", { data, error });
 
-      if (error) {
-        console.error("Insert error:", error);
-        return false;
-      }
+      if (testError) throw testError;
+
+      const testId = testData[0].id; // ✅ Get test id
+
+      // 2️⃣ Insert into test_assign_questions
+      const questionInserts = form.questionInput.map((qId) => ({
+        test_id: testId,
+        question_id: qId,
+      }));
+
+      const { error: questionsError } = await supabase
+        .from("test_assign_questions")
+        .insert(questionInserts);
+
+      if (questionsError) throw questionsError;
+
       toast.success("Test assigned Successfully!", {
         position: "bottom-right",
         autoClose: 3000,
@@ -80,16 +89,15 @@ export function useSubmitRequests() {
         closeOnClick: false,
         pauseOnHover: true,
         draggable: true,
-        progress: undefined,
         theme: "dark",
         transition: Bounce,
       });
-      console.log("Toaster Runnnn");
+
       resetForm();
       setIsSelected(false);
       return true;
     } catch (err) {
-      console.error("Submission exception:", err.message);
+      console.error("❌ Submission exception:", err.message);
     }
   };
 

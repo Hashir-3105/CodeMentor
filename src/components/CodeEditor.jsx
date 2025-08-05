@@ -3,13 +3,13 @@ import Editor from "@monaco-editor/react";
 import { io } from "socket.io-client";
 import Select from "react-select";
 import useAssignTestStore from "@/store/useAssignTestStore";
-import { useParams } from "react-router-dom";
+import useAssignedQuestionsStore from "@/store/useAssignedQuestionsStore";
+import { useParams, useNavigate } from "react-router-dom";
 import { Play } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
 import CountDownTimer from "./common/CountDownTimer";
 import { supabase } from "@/lib/supabaseClient";
 import { languages } from "@/lib/Constants";
-import { useNavigate } from "react-router-dom";
 
 const socket = io("http://localhost:5000");
 
@@ -29,30 +29,32 @@ function CodeEditor() {
   });
 
   const { assignedTest, fetchAssignedTest } = useAssignTestStore();
+  const { assignedQuestions, fetchAssignedQuestions } =
+    useAssignedQuestionsStore();
   const { userId, testId } = useParams();
   const { user } = useUser();
   const navigate = useNavigate();
-  // Fetch assigned test
+
+  // ✅ Fetch test info
   useEffect(() => {
     const idToFetch = userId || user?.id;
-    if (idToFetch && testId) fetchAssignedTest(idToFetch, testId);
+    if (idToFetch && testId) {
+      fetchAssignedTest(idToFetch, testId);
+      fetchAssignedQuestions(testId); // fetch questions separately
+    }
   }, [userId, testId, user?.id]);
 
-  // Auto-select the first question
+  // ✅ Select first question after fetching
   useEffect(() => {
-    if (assignedTest && assignedTest.length > 0) {
-      const firstQuestion = assignedTest[0].question_list[0];
-      setSelectedQuestion(firstQuestion);
+    if (assignedQuestions && assignedQuestions.length > 0) {
+      setSelectedQuestion(assignedQuestions[0]);
     }
-  }, [assignedTest]);
+  }, [assignedQuestions]);
 
-  // Load stored code for selected question
+  // ✅ Restore code per question
   useEffect(() => {
     if (selectedQuestion) {
-      const questionKey =
-        typeof selectedQuestion === "string"
-          ? selectedQuestion
-          : selectedQuestion.id;
+      const questionKey = selectedQuestion.question_id;
       setCode(codeByQuestion[questionKey] || "");
     }
   }, [selectedQuestion]);
@@ -63,11 +65,7 @@ function CodeEditor() {
   }));
 
   const handleEditorChange = (value) => {
-    const questionKey =
-      typeof selectedQuestion === "string"
-        ? selectedQuestion
-        : selectedQuestion?.id;
-
+    const questionKey = selectedQuestion?.question_id;
     setCode(value);
     setCodeByQuestion((prev) => ({
       ...prev,
@@ -77,14 +75,15 @@ function CodeEditor() {
     socket.emit("code_change", value);
   };
 
+  // ✅ Sync code with socket
   useEffect(() => {
     socket.on("code_change", (incomingCode) => setCode(incomingCode));
     return () => socket.off("code_change");
   }, []);
 
+  // ✅ Run code
   const runCode = async () => {
     if (!selectedQuestion) return alert("Please select a question first!");
-
     setLoading(true);
     setOutput("");
     setSuccessMessage(false);
@@ -126,11 +125,7 @@ function CodeEditor() {
   const handleSubmit = async () => {
     if (!selectedQuestion) return alert("Please select a question first!");
 
-    const questionKey =
-      typeof selectedQuestion === "string"
-        ? selectedQuestion
-        : selectedQuestion.id;
-
+    const questionKey = selectedQuestion.question_id;
     const codeToSubmit = codeByQuestion[questionKey] || "";
 
     const { data, error } = await supabase
@@ -139,6 +134,7 @@ function CodeEditor() {
         {
           user_id: user?.id,
           question_id: questionKey,
+          category: selectedQuestion.add_question.que_category,
           is_completed: true,
           code: codeToSubmit,
         },
@@ -152,41 +148,25 @@ function CodeEditor() {
       console.log("✅ Progress saved:", data);
       setSubmittedQuestions((prev) => [...prev, questionKey]);
 
-      const allQuestions = assignedTest.flatMap((test) => test.question_list);
-      const currentIndex = allQuestions.findIndex(
-        (q) =>
-          (typeof q === "string" ? q : q.id) ===
-          (typeof selectedQuestion === "string"
-            ? selectedQuestion
-            : selectedQuestion.id)
+      const currentIndex = assignedQuestions.findIndex(
+        (q) => q.question_id === questionKey
       );
-
-      if (currentIndex !== -1 && currentIndex < allQuestions.length - 1) {
-        setSelectedQuestion(allQuestions[currentIndex + 1]);
+      if (currentIndex !== -1 && currentIndex < assignedQuestions.length - 1) {
+        setSelectedQuestion(assignedQuestions[currentIndex + 1]);
       }
     }
   };
-  const handleTimeUp = async () => {
-    console.log("⏰ Time is up! Auto-submitting...");
 
-    // ✅ Mark test as completed in Supabase
-    await supabase
+  const handleTimeUp = async () => {
+    console.log(
+      "⏰ Time is up! Marking test as completed and navigating home..."
+    );
+    const { error } = await supabase
       .from("test_assign_submissions")
       .update({ status: "Completed" })
       .eq("id", testId);
 
-    // Optionally save all unsaved code progress
-    for (const questionId in codeByQuestion) {
-      await supabase.from("question_progress").upsert(
-        {
-          user_id: user?.id,
-          question_id: questionId,
-          is_completed: true,
-          code: codeByQuestion[questionId],
-        },
-        { onConflict: ["user_id", "question_id"] }
-      );
-    }
+    if (error) console.error("❌ Error updating test status:", error);
     navigate("/");
   };
 
@@ -196,49 +176,41 @@ function CodeEditor() {
         <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
           Your Assigned Questions
         </h2>
-        {assignedTest && assignedTest.length > 0 ? (
+        {assignedQuestions && assignedQuestions.length > 0 ? (
           <div className="grid gap-4">
             <CountDownTimer
-              testId={assignedTest[0].id}
-              durationInMinutes={assignedTest[0].duration_minutes}
+              testId={assignedTest[0]?.id}
+              durationInMinutes={assignedTest[0]?.duration_minutes}
               onTimeUp={handleTimeUp}
             />
-            {assignedTest.map((test, index) => (
-              <div
-                key={index}
-                className="bg-gray-800 border border-gray-700 rounded-lg p-4 text-white hover:shadow-lg transition-shadow"
-              >
-                <ul className="list-disc pl-5 space-y-1 text-sm text-gray-300">
-                  {test.question_list.map((q, qIndex) => (
-                    <li
-                      key={qIndex}
-                      onClick={() => {
-                        const questionKey = typeof q === "string" ? q : q.id;
-                        if (!submittedQuestions.includes(questionKey)) {
-                          setSelectedQuestion(q);
-                        }
-                      }}
-                      className={`cursor-pointer hover:text-blue-400 
+            <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 text-white hover:shadow-lg transition-shadow">
+              <ul className="list-disc pl-5 space-y-1 text-sm text-gray-300">
+                {assignedQuestions.map((q, qIndex) => (
+                  <li
+                    key={qIndex}
+                    onClick={() => {
+                      if (!submittedQuestions.includes(q.question_id)) {
+                        setSelectedQuestion(q);
+                      }
+                    }}
+                    className={`cursor-pointer hover:text-blue-400 
                       ${
-                        (typeof q === "string" && selectedQuestion === q) ||
-                        (typeof q === "object" && selectedQuestion?.id === q.id)
+                        selectedQuestion?.question_id === q.question_id
                           ? "text-blue-500 font-bold"
                           : ""
                       }
                       ${
-                        submittedQuestions.includes(
-                          typeof q === "string" ? q : q.id
-                        )
+                        submittedQuestions.includes(q.question_id)
                           ? "line-through cursor-not-allowed opacity-70"
                           : ""
-                      }`}
-                    >
-                      {typeof q === "string" ? q : q.question}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+                      }
+                    `}
+                  >
+                    {q.add_question.int_question}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         ) : (
           <p className="text-gray-300">
@@ -246,6 +218,7 @@ function CodeEditor() {
           </p>
         )}
       </div>
+
       <div className="flex max-h-[calc(100vh - 80px)] bg-gray-900 text-white p-8 gap-4">
         <div className="flex-1 bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
           <div className="flex justify-between items-center px-4 py-2 bg-gray-700 border-b border-gray-600">
@@ -289,6 +262,7 @@ function CodeEditor() {
             }}
           />
         </div>
+
         <div className="w-1/3 bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
           <div className="px-4 py-2 bg-gray-700 border-b border-gray-600 text-sm text-gray-300">
             Output
@@ -300,7 +274,7 @@ function CodeEditor() {
               <div className="bg-green-100 text-green-700 p-3 rounded-lg text-center">
                 <h3 className="font-bold">✅ Code Accepted!</h3>
                 <p className="text-xs mt-1">
-                  Well done! Your code ran successfully now you can Submit your
+                  Well done! Your code ran successfully. Now you can submit your
                   code.
                 </p>
               </div>

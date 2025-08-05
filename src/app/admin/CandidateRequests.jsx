@@ -51,7 +51,7 @@ function CandidateRequests() {
 
   const questionOptions = questions.map((q) => ({
     label: q.int_question,
-    value: q,
+    value: q.id,
   }));
 
   const timeOptions = totalTime.map((time) => ({
@@ -178,8 +178,8 @@ function CandidateRequests() {
                     setForm((prev) => ({
                       ...prev,
                       questionInput: selectedOptions.map(
-                        (option) => option.label
-                      ),
+                        (option) => option.value
+                      ), // ✅ use value (UUID)
                     }));
                   }}
                 />
