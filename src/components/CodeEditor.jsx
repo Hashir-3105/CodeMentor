@@ -35,23 +35,23 @@ function CodeEditor() {
   const { user } = useUser();
   const navigate = useNavigate();
 
-  // ✅ Fetch test info
+  //  Fetch test info
   useEffect(() => {
     const idToFetch = userId || user?.id;
     if (idToFetch && testId) {
       fetchAssignedTest(idToFetch, testId);
-      fetchAssignedQuestions(testId); // fetch questions separately
+      fetchAssignedQuestions(testId);
     }
   }, [userId, testId, user?.id]);
 
-  // ✅ Select first question after fetching
+  //  Select first question after fetching
   useEffect(() => {
     if (assignedQuestions && assignedQuestions.length > 0) {
       setSelectedQuestion(assignedQuestions[0]);
     }
   }, [assignedQuestions]);
 
-  // ✅ Restore code per question
+  //  Restore code per question
   useEffect(() => {
     if (selectedQuestion) {
       const questionKey = selectedQuestion.question_id;
@@ -75,7 +75,7 @@ function CodeEditor() {
     socket.emit("code_change", value);
   };
 
-  // ✅ Sync code with socket
+  //  Sync code with socket
   useEffect(() => {
     socket.on("code_change", (incomingCode) => setCode(incomingCode));
     return () => socket.off("code_change");
@@ -177,11 +177,16 @@ function CodeEditor() {
         </h2>
         {assignedQuestions && assignedQuestions.length > 0 ? (
           <div className="grid gap-4">
-            <CountDownTimer
-              testId={assignedTest[0]?.id}
-              durationInMinutes={assignedTest[0]?.duration_minutes}
-              onTimeUp={handleTimeUp}
-            />
+            {assignedTest.length > 0 && assignedTest[0]?.duration_minutes ? (
+              <CountDownTimer
+                testId={testId}
+                durationInMinutes={assignedTest[0]?.duration_minutes}
+                onTimeUp={handleTimeUp}
+              />
+            ) : (
+              <p className="text-gray-400 text-center">Loading timer...</p>
+            )}
+
             <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 text-white hover:shadow-lg transition-shadow">
               <ul className="list-disc pl-5 space-y-1 text-sm text-gray-300">
                 {assignedQuestions.map((q, qIndex) => (
@@ -193,17 +198,17 @@ function CodeEditor() {
                       }
                     }}
                     className={`cursor-pointer hover:text-blue-400 
-                      ${
-                        selectedQuestion?.question_id === q.question_id
-                          ? "text-blue-500 font-bold"
-                          : ""
-                      }
-                      ${
-                        submittedQuestions.includes(q.question_id)
-                          ? "line-through cursor-not-allowed opacity-70"
-                          : ""
-                      }
-                    `}
+                ${
+                  selectedQuestion?.question_id === q.question_id
+                    ? "text-blue-500 font-bold"
+                    : ""
+                }
+                ${
+                  submittedQuestions.includes(q.question_id)
+                    ? "line-through cursor-not-allowed opacity-70"
+                    : ""
+                }
+              `}
                   >
                     {q.add_question.int_question}
                   </li>

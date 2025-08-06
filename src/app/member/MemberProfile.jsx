@@ -65,7 +65,7 @@ function MemberProfile() {
       ];
       setTotalQuestionsCount(assignedQuestions.length);
 
-      // 3️⃣ Fetch completed questions for these unique IDs
+      // Fetch completed questions for these unique IDs
       const { data: completedQuestionsData, error: completedError } =
         await supabase
           .from("question_progress")
@@ -90,10 +90,6 @@ function MemberProfile() {
           ? Math.round((completedIds.length / uniqueQuestionIds.length) * 100)
           : 0;
       setProgressValue(percentage);
-
-      // 4️⃣ Category-wise progress (based on unique questions)
-      // 4️⃣ Category-wise progress (based on assigned questions)
-      // 4️⃣ Category-wise progress
       const categoryMap = {};
 
       // Count total questions (with duplicates) for each category

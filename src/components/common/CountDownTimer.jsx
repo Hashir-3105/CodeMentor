@@ -10,6 +10,7 @@ export default function CountDownTimer({
   const [finished, setFinished] = useState(false);
 
   useEffect(() => {
+    if (!testId || !durationInMinutes) return;
     const fetchStartTime = async () => {
       if (!testId) return;
 
@@ -51,7 +52,6 @@ export default function CountDownTimer({
     fetchStartTime();
   }, [testId, durationInMinutes]);
 
-  // Auto countdown
   useEffect(() => {
     if (timeRemaining === null || finished) return;
 
