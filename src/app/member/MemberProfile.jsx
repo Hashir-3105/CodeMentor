@@ -138,8 +138,10 @@ function MemberProfile() {
         {/* About Progress */}
         <motion.div
           ref={aboutRef}
-          initial="hidden"
-          animate={aboutInView ? "visible" : "hidden"}
+          initial={{ opacity: 0, x: -40 }}
+          animate={aboutInView ? { opacity: 1, x: 0 } : {}}
+          exit={{ opacity: 0, x: 10 }}
+          transition={{ duration: 0.3 }}
           className="bg-white shadow-md min-h-[310px] rounded-2xl p-8 border border-gray-200 flex items-start gap-6"
         >
           <div className="flex-shrink-0">
@@ -161,8 +163,10 @@ function MemberProfile() {
         {/* Overall Progress */}
         <motion.div
           ref={progressRef}
-          initial="hidden"
-          animate={progressInView ? "visible" : "hidden"}
+          initial={{ opacity: 0, x: 40 }}
+          animate={aboutInView ? { opacity: 1, x: 0 } : {}}
+          exit={{ opacity: 0, x: 10 }}
+          transition={{ duration: 0.3 }}
           className="w-full flex flex-col gap-6 bg-white min-h-[310px] shadow-md rounded-2xl p-8 border border-gray-200"
         >
           <h3 className="text-2xl font-semibold text-gray-800 mb-2">
