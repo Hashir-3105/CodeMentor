@@ -1,31 +1,51 @@
-import { useState } from "react";
+import React from "react";
+import { useState, useEffect } from "react";
 import { validationsAdmin } from "@/lib/utils";
 import { supabase } from "@/lib/supabaseClient";
 import { toast, Bounce } from "react-toastify";
+import makeAnimated from "react-select/animated";
+import { totalTime } from "@/lib/Constants";
+import useQuestionStore from "@/store/useQuestionStore";
+import useCandidatesStore from "@/store/useCandidatesStore";
+import { components } from "react-select";
+
 export function useSubmitRequests() {
   const [isSelected, setIsSelected] = useState(false);
   const [errors, setErrors] = useState({});
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState("10:00");
   const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const animatedComponents = makeAnimated();
+  const { questions, fetchQuestions } = useQuestionStore();
+  const {
+    // candidates,
+    fetchCandidates,
+    updateStatus,
+    filteredCandidates,
+    hasFetch,
+    loading,
+  } = useCandidatesStore();
+
+  useEffect(() => {
+    fetchQuestions();
+    fetchCandidates();
+  }, [fetchQuestions, fetchCandidates]);
 
   const [form, setForm] = useState({
     questionInput: [],
     timeInput: null,
-    // roomInput: "",
-    // interviewersInput: "",
   });
+
   const resetForm = () => {
     setIsSelected(false);
     setForm({
       questionInput: [],
       timeInput: null,
-      // roomInput: "",
-      // interviewersInput: "",
     });
     setSelectedDate(null);
     setErrors({});
   };
+
   const handleSubmit = async () => {
     const validateErrors = validationsAdmin(form);
     if (Object.keys(validateErrors).length > 0) {
@@ -60,7 +80,7 @@ export function useSubmitRequests() {
         ).toISOString(),
       };
 
-      // 1️⃣ Create test record
+      // Create test record
       const { data: testData, error: testError } = await supabase
         .from("test_assign_submissions")
         .insert([payload])
@@ -68,9 +88,9 @@ export function useSubmitRequests() {
 
       if (testError) throw testError;
 
-      const testId = testData[0].id; // ✅ Get test id
+      const testId = testData[0].id; // Get test id
 
-      // 2️⃣ Insert into test_assign_questions
+      // Insert into test_assign_questions
       const questionInserts = form.questionInput.map((qId) => ({
         test_id: testId,
         question_id: qId,
@@ -100,7 +120,29 @@ export function useSubmitRequests() {
       console.error("❌ Submission exception:", err.message);
     }
   };
-
+  const timeOptions = totalTime.map((time) => ({
+    label: `${time} minutes`,
+    value: time,
+  }));
+  const questionOptions = questions.map((q) => ({
+    label: q.int_question,
+    value: q.id,
+  }));
+  const CustomValueContainer = ({ children, ...props }) => {
+    const selected = props.getValue();
+    return (
+      <components.ValueContainer {...props}>
+        {selected.length === 0 ? (
+          <components.Placeholder {...props}>
+            {props.selectProps.placeholder}
+          </components.Placeholder>
+        ) : (
+          `${selected.length} selected`
+        )}
+        {React.cloneElement(children[1])}
+      </components.ValueContainer>
+    );
+  };
   return {
     isSelected,
     setIsSelected,
@@ -114,5 +156,14 @@ export function useSubmitRequests() {
     setSelectedDate,
     selectedCandidate,
     setSelectedCandidate,
+    animatedComponents,
+    timeOptions,
+    questionOptions,
+    questions,
+    updateStatus,
+    filteredCandidates,
+    hasFetch,
+    loading,
+    CustomValueContainer,
   };
 }

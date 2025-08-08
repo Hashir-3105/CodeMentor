@@ -10,16 +10,12 @@ import SignUpForm from "./app/auth/SignUpForm";
 import MemberDashboard from "./app/member/MemberDashboard";
 import MemberProfile from "./app/member/MemberProfile";
 import Users from "./app/admin/Users";
-import Unauthorized from "./components/Unauthorized";
 import RoleRedirect from "./components/RoleRedirect";
 import CodeSection from "./app/member/CodeSection";
-// import InterviewSection from "./app/member/TestSection";
 import LandingPage from "./app/member/LandingPage";
-import Rooms from "./app/admin/RoomsSection";
 import ContactUs from "./app/member/ContactUs";
 import ProblemsList from "./app/admin/ProblemsList";
 import AdminDashboard from "./app/admin/AdminDashboard";
-import ManageRequests from "./app/admin/CandidateRequests";
 import Management from "./app/admin/Management";
 import CandidateRequests from "./app/admin/CandidateRequests";
 import TestSection from "./app/member/TestSection";
@@ -63,10 +59,6 @@ const router = createBrowserRouter([
           {
             path: "overview",
             element: <ProblemsList />,
-          },
-          {
-            path: "rooms",
-            element: <Rooms />,
           },
           {
             path: "users",
@@ -118,10 +110,6 @@ const router = createBrowserRouter([
     path: "/Sign-up",
     element: <SignUpForm />,
   },
-  // {
-  //   path: "/404",
-  //   element: <Unauthorized />,
-  // },
   {
     path: "*",
     element: <PageNotFound />,

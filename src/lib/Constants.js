@@ -27,22 +27,6 @@ export const questions = [
 ];
 export const questionDifficulty = ["Easy", "Medium", "Hard"];
 
-export const candidateRequests = [
-  {
-    id: 1,
-    name: "Hasnat Sarwar",
-    email: "hasnat@example.com",
-    appliedFor: "Frontend Intern",
-    status: "Pending",
-  },
-  {
-    id: 2,
-    name: "Hashir Sarwar",
-    email: "sara@example.com",
-    appliedFor: "React Developer",
-    status: "Pending",
-  },
-];
 export const rooms = [
   { id: 1, name: "Room A", status: "Available", progress: 70 },
   { id: 2, name: "Room B", status: "Available", progress: 0 },
@@ -125,7 +109,7 @@ export const stepsToStart = [
   },
 ];
 
-export const languages = [
+export const codeLanguages = [
   { id: 63, name: "JavaScript (Node.js)" },
   { id: 71, name: "Python (3.8)" },
   { id: 62, name: "Java (OpenJDK)" },

@@ -2,18 +2,34 @@ import { validationsTestCatalog } from "@/lib/utils";
 import { supabase } from "@/lib/supabaseClient";
 import useQuestionStore from "@/store/useQuestionStore";
 import { useState } from "react";
+import { questionDifficulty } from "@/lib/Constants";
+import makeAnimated from "react-select/animated";
+import { useEffect } from "react";
+
 export function useSubmitQuestions() {
   const [isSelected, setIsSelected] = useState(false);
   const [errors, setErrors] = useState({});
   const [form, setForm] = useState({
     intQ: "",
-    expectedOutput: "",
+    // expectedOutput: "",
     intCategory: "",
     diffLevel: "",
   });
-  const { addQuestion } = useQuestionStore();
-  const { intQ, intCategory, diffLevel, expectedOutput } = form;
-  const handleSubmit = async ({ testCases }) => {
+
+  const {
+    addQuestion,
+    questions: dbQuestions,
+    fetchQuestions,
+  } = useQuestionStore();
+
+  const animatedComponents = makeAnimated();
+
+  useEffect(() => {
+    fetchQuestions();
+  }, [fetchQuestions]);
+
+  const { intQ, intCategory, diffLevel } = form;
+  const handleSubmit = async () => {
     const validateErrors = validationsTestCatalog(form);
     if (Object.keys(validateErrors).length > 0) {
       setErrors(validateErrors);
@@ -26,7 +42,7 @@ export function useSubmitQuestions() {
         .insert([
           {
             int_question: intQ,
-            expected_output: JSON.stringify(testCases), // Save array as JSON
+            // expected_output: JSON.stringify(testCases),
             que_category: intCategory,
             question_difficulty: diffLevel,
           },
@@ -42,7 +58,10 @@ export function useSubmitQuestions() {
       console.error("Submission error:", err.message);
     }
   };
-
+  const difficultyOptions = questionDifficulty.map((diff) => ({
+    label: diff,
+    value: diff,
+  }));
   return {
     handleSubmit,
     isSelected,
@@ -53,6 +72,9 @@ export function useSubmitQuestions() {
     intQ,
     intCategory,
     diffLevel,
-    expectedOutput,
+    // expectedOutput,
+    difficultyOptions,
+    dbQuestions,
+    animatedComponents,
   };
 }

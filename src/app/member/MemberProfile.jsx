@@ -26,8 +26,6 @@ function MemberProfile() {
     const fetchProgress = async () => {
       if (!user?.id) return;
 
-      // console.log("🔄 Fetching progress for user:", user.id);
-
       // 1️⃣ Fetch all test IDs for the user
       const { data: assignedTests, error: testError } = await supabase
         .from("test_assign_submissions")
@@ -84,7 +82,7 @@ function MemberProfile() {
       ];
       setCompletedQuestionsCount(completedIds.length);
 
-      // ✅ Calculate overall percentage
+      //overall percentage
       const percentage =
         uniqueQuestionIds.length > 0
           ? Math.round((completedIds.length / uniqueQuestionIds.length) * 100)
@@ -113,7 +111,7 @@ function MemberProfile() {
       const categoryStats = Object.entries(categoryMap).map(
         ([category, stats]) => ({
           category,
-          completed: stats.completed.size, // unique completed questions
+          completed: stats.completed.size,
           total: stats.total,
           progress:
             stats.total > 0
@@ -159,12 +157,10 @@ function MemberProfile() {
             </p>
           </div>
         </motion.div>
-
-        {/* Overall Progress */}
         <motion.div
           ref={progressRef}
           initial={{ opacity: 0, x: 40 }}
-          animate={aboutInView ? { opacity: 1, x: 0 } : {}}
+          animate={progressInView ? { opacity: 1, x: 0 } : {}}
           exit={{ opacity: 0, x: 10 }}
           transition={{ duration: 0.3 }}
           className="w-full flex flex-col gap-6 bg-white min-h-[310px] shadow-md rounded-2xl p-8 border border-gray-200"
@@ -204,8 +200,6 @@ function MemberProfile() {
             </div>
           </div>
         </motion.div>
-
-        {/* Category Progress */}
         <div className="col-span-1 md:col-span-2 bg-white shadow-md rounded-2xl p-8 border border-gray-200">
           <h3 className="text-2xl font-semibold text-gray-800 mb-4">
             Category Progress

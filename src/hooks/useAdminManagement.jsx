@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import useCandidatesStore from "@/store/useCandidatesStore";
 import useAssignTestStore from "@/store/useAssignTestStore";
 import { Clock, Users, Code, ClockArrowUp } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 export function useAdminManagement() {
-  const { assignedTest } = useAssignTestStore();
-  const { candidates, filteredCandidates } = useCandidatesStore();
+  const navigate = useNavigate();
+  const { candidates } = useCandidatesStore();
+  const { assignedTest, fetchAssignedTest, hasFetch } = useAssignTestStore();
+  useEffect(() => {
+    fetchAssignedTest();
+  }, [fetchAssignedTest]);
   const totalCandidates = candidates.length;
-  // const pendingCandidates = filteredCandidates.length;
   const inProgressTests = assignedTest.filter(
     (test) => test.status === "in-progress"
   );
@@ -37,5 +42,5 @@ export function useAdminManagement() {
       count: completedTest.length,
     },
   ];
-  return { dispayCardData };
+  return { dispayCardData, navigate, hasFetch, assignedTest };
 }

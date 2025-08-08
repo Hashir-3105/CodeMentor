@@ -9,7 +9,7 @@ import { Play } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
 import CountDownTimer from "./common/CountDownTimer";
 import { supabase } from "@/lib/supabaseClient";
-import { languages } from "@/lib/Constants";
+import { codeLanguages } from "@/lib/Constants";
 
 const socket = io("https://codementor-backend-production.up.railway.app/");
 
@@ -24,8 +24,8 @@ function CodeEditor() {
   const [isCodeValid, setIsCodeValid] = useState(false);
 
   const [languageId, setLanguageId] = useState({
-    name: languages[0].name,
-    value: languages[0],
+    name: codeLanguages[0].name,
+    value: codeLanguages[0],
   });
 
   const { assignedTest, fetchAssignedTest } = useAssignTestStore();
@@ -59,7 +59,7 @@ function CodeEditor() {
     }
   }, [selectedQuestion]);
 
-  const languageOptions = languages.map((lang) => ({
+  const languageOptions = codeLanguages.map((lang) => ({
     label: lang.name,
     value: lang,
   }));

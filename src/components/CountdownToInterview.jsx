@@ -71,23 +71,6 @@ function CountdownToInterview({ scheduledDateTime, testId, testStatus }) {
             ? "Test Started"
             : "Start Test"}
         </Button>
-        // <Button
-        //   component={Link}
-        //   to={`/user/editor/${testId}`}
-        //   onClick={() => updateTestStatus(testId, "in-progress")}
-        //   disabled={testStatus === "Completed" || testStatus === "in-progress"}
-        //   className={`mt-2 text-sm px-4 py-1.5 rounded-md transition ${
-        //     testStatus === "Completed" || testStatus === "in-progress"
-        //       ? "bg-gray-400 cursor-not-allowed"
-        //       : "bg-green-600 hover:bg-green-700 text-white"
-        //   }`}
-        // >
-        //   {testStatus === "Completed"
-        //     ? "Completed"
-        //     : testStatus === "in-progress"
-        //     ? "Test Started"
-        //     : "Start Test"}
-        // </Button>
       )}
     </div>
   );

@@ -5,7 +5,7 @@ const useAssignedQuestionsStore = create((set) => ({
   assignedQuestions: [],
   fetchAssignedQuestions: async (testId) => {
     try {
-      // 1️⃣ Fetch assigned questions with question details using a join
+      //  Fetch assigned questions with question details using a join
       const { data, error } = await supabase
         .from("test_assign_questions")
         .select(

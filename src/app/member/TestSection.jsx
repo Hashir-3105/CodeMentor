@@ -58,10 +58,6 @@ function TestSection() {
                   <Briefcase className="w-4 h-4 text-gray-500" />
                   <span>{test.int_position}</span>
                 </div>
-                {/* <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-gray-500" />
-                  <span>{test.interviewer_name}</span>
-                </div> */}
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-gray-500" />
                   <span>
@@ -75,10 +71,6 @@ function TestSection() {
                     })}
                   </span>
                 </div>
-                {/* <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-gray-500" />
-                  <span>{test.scheduled_time}</span>
-                </div> */}
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-gray-500" />
                   <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-md text-xs font-medium">

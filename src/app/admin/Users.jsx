@@ -12,7 +12,6 @@ function Users() {
     <div className="p-6">
       <h2 className="text-xl font-bold mb-4">User : {userName}</h2>
       <p className=" mb-4">UserEmail : {userEmail}</p>
-      {/* <CodeEditor /> */}
     </div>
   );
 }
