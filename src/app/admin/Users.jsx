@@ -1,7 +1,6 @@
 import React from "react";
 import { useUser } from "@clerk/clerk-react";
 import { useMemberUtils } from "@/hooks/useMemberUtils";
-import CodeEditor from "@/components/CodeEditor";
 function Users() {
   const { capitalizeStr } = useMemberUtils();
   const { user } = useUser();

@@ -1,62 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { UserButton } from "@clerk/clerk-react";
-import { supabase } from "@/lib/supabaseClient";
-
+import useAdminDashboard from "@/hooks/useAdminDashboard";
 export default function AdminDashboard() {
-  const [requestCount, setRequestCount] = useState(0);
-
-  const adminAsides = [
-    { name: "Dashboard", redirect: "/admin/dashboard" },
-    { name: "Requests", redirect: "/admin/management" },
-    { name: "Test Catalog", redirect: "overview" },
-  ];
-
-  const fetchPendingCount = async () => {
-    const { count } = await supabase
-      .from("contact_submissions")
-      .select("*", { count: "exact" })
-      .eq("status", "pending");
-
-    if (count !== null) setRequestCount(count);
-  };
-
-  useEffect(() => {
-    fetchPendingCount();
-  }, []);
-
-  useEffect(() => {
-    const channel = supabase
-      .channel("contact-submissions")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "contact_submissions" },
-        async (payload) => {
-          console.log("INSERT EVENT /-/-/-/:", payload);
-          if (payload.new.status === "pending") {
-            await fetchPendingCount();
-          }
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "contact_submissions" },
-        async (payload) => {
-          console.log("UPDATE EVENT <><><><>:", payload);
-          if (
-            payload.eventType === "INSERT" ||
-            payload.eventType === "UPDATE"
-          ) {
-            await fetchPendingCount();
-          }
-        }
-      )
-      .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
+  const { adminAsides, requestCount } = useAdminDashboard();
   return (
     <div className="bg-gray-100 text-gray-800 min-h-screen">
       <header className="flex items-center justify-between px-6 py-4 bg-white shadow-sm border-b border-gray-200">

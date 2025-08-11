@@ -1,91 +1,5 @@
-export const questions = [
-  {
-    id: 1,
-    title: "What is a closure in JavaScript?",
-    category: "JavaScript",
-    difficulty: "Medium",
-  },
-  {
-    id: 2,
-    title: "Explain event delegation.",
-    category: "JavaScript",
-    difficulty: "Hard",
-  },
-
-  {
-    id: 3,
-    title: "Flatten Array with .reduce()",
-    category: "Javascript",
-    difficulty: "Medium",
-  },
-  {
-    id: 4,
-    title: "Double Each Number Using .map()",
-    category: "Javascript",
-    difficulty: "Medium",
-  },
-];
 export const questionDifficulty = ["Easy", "Medium", "Hard"];
-
-export const rooms = [
-  { id: 1, name: "Room A", status: "Available", progress: 70 },
-  { id: 2, name: "Room B", status: "Available", progress: 0 },
-  { id: 3, name: "Room C", status: "Available", progress: 20 },
-  { id: 4, name: "Room D", status: "Available", progress: 0 },
-  { id: 5, name: "Room E", status: "Available", progress: 0 },
-];
-export const interviewers = [
-  {
-    id: 1,
-    name: "Interviewer1",
-  },
-  {
-    id: 2,
-    name: "Interviewer2",
-  },
-  {
-    id: 3,
-    name: "Interviewer3",
-  },
-  {
-    id: 4,
-    name: "Interviewer4",
-  },
-];
 export const totalTime = [1, 5, 10, 15, 30, 45, 60];
-export const interviews = [
-  {
-    id: 1,
-    position: "React Developer",
-    date: "2025-07-16",
-    time: "10:00 AM",
-    interviewer: "Umer Arshad",
-    status: "Scheduled",
-    room: "A",
-    scheduledDateTime: "2025-07-23T10:00:00",
-  },
-  {
-    id: 2,
-    position: "Frontend Intern",
-    date: "2025-07-10",
-    time: "1:00 PM",
-    interviewer: "Abdurehman",
-    status: "Scheduled",
-    room: "B",
-    scheduledDateTime: "2025-07-10T13:00:00",
-  },
-  {
-    id: 3,
-    position: "JS Fundamentals",
-    date: "2025-07-18",
-    time: "1:30 PM",
-    interviewer: "Salman Ahmed",
-    status: "Cancelled",
-    room: "C",
-    scheduledDateTime: "2025-07-18T13:30:00",
-  },
-];
-
 export const stepsToStart = [
   {
     step: "1",
@@ -108,7 +22,6 @@ export const stepsToStart = [
     desc: "Visualize your learning curve over time.",
   },
 ];
-
 export const codeLanguages = [
   { id: 63, name: "JavaScript (Node.js)" },
   { id: 71, name: "Python (3.8)" },

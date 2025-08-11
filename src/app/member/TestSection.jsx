@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Calendar, Clock, User, Briefcase } from "lucide-react";
+import { Calendar, Clock, Briefcase } from "lucide-react";
 import CountdownToInterview from "@/components/CountdownToInterview";
 import useAssignTestStore from "@/store/useAssignTestStore";
 import { useUser } from "@clerk/clerk-react";

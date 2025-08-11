@@ -31,9 +31,5 @@ export default function RoleRedirect() {
     fetchRole();
   }, [isLoaded, user, navigate]);
 
-  // if (loading) {
-  //   return <div>Loading...</div>; // Optional: Show spinner or skeleton
-  // }
-
   return null;
 }
