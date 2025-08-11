@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { validations } from "@/lib/utils";
 import { useState } from "react";
 import { toast, Bounce } from "react-toastify";
+import { createInputHandler } from "@/lib/utils";
 export function useContactUsSubmission() {
   const [form, setForm] = useState({
     fullName: "",
@@ -58,16 +59,17 @@ export function useContactUsSubmission() {
       setIsSubmitting(false);
     }
   };
+  const handleInputChange = createInputHandler(setForm, setErrors, errors);
   return {
     handleSubmit,
     isSubmitting,
     errors,
-    setErrors,
     fullName,
     email,
     position,
     message,
     form,
     setForm,
+    handleInputChange,
   };
 }

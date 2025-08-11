@@ -1,7 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import Input from "@/components/common/Input";
-import { createInputHandler } from "@/lib/utils";
 import { useContactUsSubmission } from "@/hooks/useContactUsSubmission";
 import Toaster from "@/components/common/Toaster";
 
@@ -10,15 +9,13 @@ function ContactUs() {
     handleSubmit,
     isSubmitting,
     errors,
-    setErrors,
     fullName,
     email,
     position,
     message,
     setForm,
+    handleInputChange,
   } = useContactUsSubmission();
-
-  const handleInputChange = createInputHandler(setForm, setErrors, errors);
 
   return (
     <section className="min-h-[calc(100vh-70px)] flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 px-4 py-12">
